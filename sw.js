@@ -1,6 +1,6 @@
 /* Service Worker - Dashboard Terpadu Karhutla Rakumpit
    Naikkan VERSION setiap kali index.html / aset berubah agar cache lama dibersihkan. */
-const VERSION = 'v2.2.1';
+const VERSION = 'v2.3.0';
 const SHELL_CACHE = 'karhutla-shell-' + VERSION;
 const LIB_CACHE = 'karhutla-lib-' + VERSION;
 const TILE_CACHE = 'karhutla-tiles-v1';
@@ -8,7 +8,7 @@ const DATA_CACHE = 'karhutla-data-v1';
 const KEEP = [SHELL_CACHE, LIB_CACHE, TILE_CACHE, DATA_CACHE];
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 const LIB_HOSTS = ['unpkg.com', 'cdn.tailwindcss.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
-const TILE_HOSTS = ['tile.openstreetmap.org', 'server.arcgisonline.com', 'basemaps.cartocdn.com', 'gibs.earthdata.nasa.gov', 'tile.opentopomap.org'];
+const TILE_HOSTS = ['tile.openstreetmap.org', 'server.arcgisonline.com', 'basemaps.cartocdn.com', 'gibs.earthdata.nasa.gov', 'tile.opentopomap.org', 'sippeg.menlhk.go.id'];
 const DATA_HOSTS = ['script.google.com', 'script.googleusercontent.com', 'api.open-meteo.com', 'air-quality-api.open-meteo.com', 'api.bmkg.go.id', 'cuaca.bmkg.go.id'];
 const TILE_MAX = 400;
 
