@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- KEAMANAN: kebijakan konten, referrer, dan anti-framing (untuk GitHub Pages) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://accounts.google.com https://unpkg.com https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://accounts.google.com https://script.google.com https://script.googleusercontent.com https://api.open-meteo.com https://air-quality-api.open-meteo.com https://api.bmkg.go.id https://cuaca.bmkg.go.id; worker-src 'self'; frame-src https://accounts.google.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://script.google.com https://script.googleusercontent.com https://api.open-meteo.com https://air-quality-api.open-meteo.com https://api.bmkg.go.id https://cuaca.bmkg.go.id https://sippeg.menlhk.go.id https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; worker-src 'self'; frame-src 'none'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="robots" content="noindex, nofollow">
     <script>
@@ -636,15 +636,7 @@
         @media print { #rk-loader, #rk-toasts { display:none !important; } }
     </style>
     <style>
-        /* v6.2: tombol login & modal */
-        #btn-login { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a; cursor: pointer; transition: all .15s; }
-        #btn-login:hover { background: #ecfdf5; border-color: #10b981; }
-        #btn-login.hidden { display: none; }
-        #btn-login .rk-av { width: 22px; height: 22px; border-radius: 50%; background: #0d4632; color: #f0c75e; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
-        #btn-login .rk-role { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 99px; }
-        html.dark #btn-login { background: #1e293b; color: #e2e8f0; border-color: #475569; }
-        #login-overlay .login-card { background: #fff; color: #0f172a; border-radius: 18px; padding: 22px; width: min(92vw, 360px); box-shadow: 0 20px 50px rgba(0,0,0,.35); text-align: center; }
-        html.dark #login-overlay .login-card { background: #0f172a; color: #e2e8f0; }
+        /* blok akses & info gambut di popup titik panas */
         .leaflet-popup-content .rk-acc { font-size: 11px; line-height: 1.45; color: #334155; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 8px; }
     </style>
     <script>
@@ -692,7 +684,6 @@
             </nav>
 
             <div class="flex items-center gap-2">
-                <button id="btn-login" type="button" class="hidden" title="Masuk dengan akun Google petugas"></button>
                 <!-- Tombol Ganti Tema Gelap/Terang -->
                 <button id="btn-theme-toggle" type="button" title="Ganti tema gelap/terang"
                     class="inline-flex items-center justify-center w-9 h-9 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-xl transition-all active:scale-95 cursor-pointer">
@@ -703,18 +694,6 @@
         </div>
         <nav class="md:hidden flex gap-1 overflow-x-auto px-3 pb-2 text-xs font-semibold"><a href="#dashboard" data-nav="0" class="nav-link">Dashboard</a><a href="#peta-section" data-nav="1" class="nav-link">Peta</a><a href="#daftar-hotspot" data-nav="2" class="nav-link">Daftar Hotspot</a><a href="#stats-section" data-nav="3" class="nav-link">Statistik</a><a href="#report-history" data-nav="4" class="nav-link">Riwayat Laporan</a><a href="#analisis-rawan" data-nav="5" class="nav-link">Analisis</a></nav>
     </header>
-
-    <!-- v6.2: modal login Google -->
-    <div id="login-overlay" class="hidden fixed inset-0 z-[10000] items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="login-title">
-        <div class="login-card">
-            <h3 id="login-title" style="font-size:17px;font-weight:800;margin:0 0 4px">Masuk Petugas</h3>
-            <p id="login-reason" style="font-size:12px;color:#64748b;margin:0 0 14px"></p>
-            <div id="login-gbtn" style="display:flex;justify-content:center;min-height:44px"></div>
-            <p id="login-msg" role="status" style="font-size:12px;margin:12px 0 0;min-height:16px"></p>
-            <p style="font-size:10.5px;color:#94a3b8;margin:8px 0 12px">Hanya akun yang didaftarkan admin di sheet Petugas yang dapat mengirim laporan. Melihat dashboard tidak perlu login.</p>
-            <button id="login-close" type="button" style="font-size:12px;font-weight:700;color:#475569;background:#f1f5f9;border-radius:10px;padding:7px 18px">Tutup</button>
-        </div>
-    </div>
 
     <!-- Main Container -->
     <main id="dashboard" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow space-y-6">
@@ -1482,9 +1461,6 @@
         async function apiFetch_(url, opts) {
             const o = Object.assign({ method: 'GET', body: undefined, timeout: 45000, retries: 1 }, opts || {});
             if (o.method !== 'GET') o.retries = 0; // jangan mengirim ganda data yang sudah terkirim
-            if (o.method !== 'GET' && !o.noAuth && typeof o.body === 'string' && typeof Auth !== 'undefined' && Auth.token()) {
-                try { const b = JSON.parse(o.body); if (b && typeof b === 'object' && !b.idToken) { b.idToken = Auth.token(); o.body = JSON.stringify(b); } } catch (e) { /* abaikan */ }
-            }
             let lastErr = null;
             for (let attempt = 0; attempt <= o.retries; attempt++) {
                 const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), o.timeout);
@@ -1496,7 +1472,6 @@
                     try { json = await res.json(); }
                     catch (e) { throw apiErr_('BAD_RESPONSE', 'Respons server tidak valid. Pastikan URL Web App benar dan dideploy dengan akses "Anyone".', true); }
                     if (json && json.status === 'error') {
-                        if (typeof Auth !== 'undefined' && !o.noAuth && /^(TOKEN_EXPIRED|AUTH_REQUIRED|NOT_REGISTERED)$/.test(json.code || '')) { try { Auth.onApiError(json.code); } catch (e) { /* abaikan */ } }
                         throw apiErr_(json.code || 'SERVER', json.message || 'Server menolak permintaan.', json.code !== 'BUSY');
                     }
                     return json;
@@ -1523,7 +1498,7 @@
         window.addEventListener('offline', () => Notify.warn('Koneksi internet terputus. Data terakhir tetap ditampilkan.', 'Offline', { timeout: 0 }));
         window.addEventListener('online', () => Notify.success('Koneksi internet pulih.', 'Kembali online'));
 
-        // ================= v6.2: LOGIN GOOGLE, PERAN, STATUS VERIFIKASI =================
+        // ================= STATUS VERIFIKASI TITIK PANAS =================
         var globalStatus = {}; // {hotspotKey: {status, catatan, nama, waktu, otomatis}}
         const STATUS_LIST_ = ['Belum dicek', 'Sedang ditangani', 'Api padam', 'Bukan api'];
         const STATUS_STYLE_ = {
@@ -1532,115 +1507,6 @@
             'Api padam': { bg: '#dcfce7', fg: '#15803d', ring: '#16a34a', ic: '●' },
             'Bukan api': { bg: '#e2e8f0', fg: '#475569', ring: '#94a3b8', ic: '✕' }
         };
-        const Auth = (function () {
-            const SS = 'rk_login_v1';
-            let info = { aktif: false, wajib: false, clientId: '' }, sess = null, gisReady = false, gisLoading = null;
-            try { const j = JSON.parse(sessionStorage.getItem(SS) || 'null'); if (j && j.token && j.exp * 1000 > Date.now() + 30000) sess = j; } catch (e) { /* abaikan */ }
-            const q = (id) => document.getElementById(id);
-            function valid() { return !!(sess && sess.exp * 1000 > Date.now() + 15000); }
-            function save() { try { if (sess) sessionStorage.setItem(SS, JSON.stringify(sess)); else sessionStorage.removeItem(SS); } catch (e) { /* abaikan */ } }
-            function user() { return valid() ? sess.user : null; }
-            function canWrite() {
-                if (!info.aktif) return true;
-                const u = user();
-                if (!u) return !info.wajib;
-                return u.peran === 'admin' || u.peran === 'petugas';
-            }
-            function token() { return valid() ? sess.token : ''; }
-            function renderBtn() {
-                const b = q('btn-login'); if (!b) return;
-                if (!info.aktif) { b.classList.add('hidden'); return; }
-                b.classList.remove('hidden');
-                const u = user();
-                b.title = u ? 'Masuk sebagai ' + u.email + ' (' + u.peran + '). Klik untuk keluar.' : 'Masuk dengan akun Google petugas';
-                b.innerHTML = u
-                    ? '<span class="rk-av">' + esc((u.nama || u.email).charAt(0).toUpperCase()) + '</span><span class="hidden sm:inline max-w-[9rem] truncate">' + esc(u.nama) + '</span><span class="rk-role">' + esc(u.peran) + '</span>'
-                    : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg><span>Masuk</span>';
-            }
-            function fillForms() {
-                const u = user();
-                [['report-pelapor'], ['manual-pelapor'], ['ws-pelapor']].forEach(([id]) => {
-                    const el = q(id); if (!el) return;
-                    if (u) { el.value = u.nama; el.readOnly = true; el.title = 'Diisi otomatis dari akun Google Anda'; el.style.opacity = '.75'; }
-                    else if (el.readOnly) { el.readOnly = false; el.value = ''; el.title = ''; el.style.opacity = ''; }
-                });
-            }
-            function loadGis() {
-                if (gisReady) return Promise.resolve();
-                if (gisLoading) return gisLoading;
-                gisLoading = new Promise((res, rej) => {
-                    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; s.defer = true;
-                    s.onload = () => { gisReady = true; res(); };
-                    s.onerror = () => { gisLoading = null; rej(new Error('Tidak dapat memuat layanan login Google. Periksa koneksi internet.')); };
-                    document.head.appendChild(s);
-                });
-                return gisLoading;
-            }
-            async function onCredential(resp) {
-                const msg = q('login-msg');
-                try {
-                    if (msg) { msg.style.color = '#475569'; msg.textContent = 'Memeriksa akun...'; }
-                    const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'whoami', idToken: resp.credential }), timeout: 30000, noAuth: true });
-                    sess = { token: resp.credential, exp: r.exp, user: r.user }; save();
-                    renderBtn(); fillForms(); closeModal();
-                    Notify.success('Masuk sebagai ' + r.user.nama + ' (' + r.user.peran + ').', 'Login berhasil');
-                    if (typeof fetchRealtimeData === 'function') fetchRealtimeData(false);
-                } catch (e) {
-                    sess = null; save(); renderBtn();
-                    if (msg) { msg.style.color = '#b91c1c'; msg.textContent = friendlyError_(e); }
-                }
-            }
-            async function openModal(reason) {
-                const ov = q('login-overlay'); if (!ov) return;
-                q('login-msg').textContent = ''; q('login-msg').style.color = '#475569';
-                q('login-reason').textContent = reason || 'Masuk dengan akun Google yang sudah didaftarkan admin sebagai petugas.';
-                ov.classList.remove('hidden'); ov.classList.add('flex');
-                try {
-                    await loadGis();
-                    google.accounts.id.initialize({ client_id: info.clientId, callback: onCredential, auto_select: false, cancel_on_tap_outside: true });
-                    const host = q('login-gbtn'); host.innerHTML = '';
-                    google.accounts.id.renderButton(host, { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', locale: 'id', width: 260 });
-                } catch (e) { q('login-msg').style.color = '#b91c1c'; q('login-msg').textContent = friendlyError_(e); }
-            }
-            function closeModal() { const ov = q('login-overlay'); if (ov) { ov.classList.add('hidden'); ov.classList.remove('flex'); } }
-            function logout() {
-                sess = null; save(); renderBtn(); fillForms();
-                try { if (window.google && google.accounts) google.accounts.id.disableAutoSelect(); } catch (e) { /* abaikan */ }
-                Notify.info('Anda sudah keluar.', 'Logout');
-                if (typeof fetchRealtimeData === 'function') fetchRealtimeData(false);
-            }
-            function setInfo(a) {
-                if (!a) return;
-                const changed = a.aktif !== info.aktif || a.clientId !== info.clientId;
-                info = { aktif: !!a.aktif, wajib: !!a.wajib, clientId: String(a.clientId || '') };
-                if (!info.aktif && sess) { sess = null; save(); }
-                if (changed || true) { renderBtn(); fillForms(); }
-            }
-            /** Dipanggil sebelum aksi tulis. Melempar error ramah bila belum boleh. */
-            function need(actionName) {
-                if (!info.aktif) return;
-                if (canWrite()) return;
-                const u = user();
-                if (u) throw apiErr_('FORBIDDEN', 'Peran akun Anda (' + u.peran + ') hanya boleh melihat data.', true);
-                openModal('Masuk dulu untuk ' + (actionName || 'mengirim laporan') + '.');
-                throw apiErr_('AUTH_REQUIRED', 'Silakan masuk dengan akun Google petugas terlebih dahulu.', true);
-            }
-            function onApiError(code) {
-                if (code === 'TOKEN_EXPIRED' || code === 'AUTH_REQUIRED') { sess = null; save(); renderBtn(); fillForms(); openModal('Sesi login berakhir atau diperlukan. Silakan masuk lagi.'); }
-                else if (code === 'NOT_REGISTERED') { sess = null; save(); renderBtn(); fillForms(); }
-            }
-            document.addEventListener('DOMContentLoaded', () => {
-                const b = q('btn-login');
-                if (b) b.addEventListener('click', () => { if (user()) { if (confirm('Keluar dari akun ' + user().email + '?')) logout(); } else openModal(); });
-                const c = q('login-close'); if (c) c.addEventListener('click', closeModal);
-                const ov = q('login-overlay'); if (ov) ov.addEventListener('click', (e) => { if (e.target === ov) closeModal(); });
-                renderBtn();
-            });
-            // isi nama pelapor otomatis saat modal laporan dibuka
-            document.addEventListener('click', () => setTimeout(fillForms, 0), true);
-            return { setInfo, user, token, canWrite, need, onApiError, openModal, info: () => info, renderBtn };
-        })();
-
         function statusBadgeHtml_(st) {
             const s = STATUS_STYLE_[st] || STATUS_STYLE_['Belum dicek'];
             return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + s.bg + ';color:' + s.fg + ';font-weight:700;font-size:11px;padding:2px 9px;border-radius:99px">' + s.ic + ' ' + esc(st) + '</span>';
@@ -1652,22 +1518,22 @@
                 '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Verifikasi Lapangan</div>' +
                 '<div>' + statusBadgeHtml_(st) + '</div>';
             if (cur) h += '<div class="text-[10.5px] text-slate-500 leading-snug">' + esc(cur.nama || '-') + ' · ' + esc(fmtWib_(cur.waktu)) + (cur.otomatis ? ' (otomatis dari laporan)' : '') + (cur.catatan ? '<br><i>' + esc(cur.catatan) + '</i>' : '') + '</div>';
-            if (Auth.canWrite()) {
-                h += '<select class="rk-st-sel w-full text-[11px] border border-slate-200 rounded-lg p-1.5 bg-white">' + STATUS_LIST_.map(s => '<option' + (s === st ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' +
+            {
+                h += '<input type="text" maxlength="60" class="rk-st-nama w-full text-[11px] border border-slate-200 rounded-lg p-1.5" placeholder="Nama petugas" value="' + esc(savedPetugas_()) + '">' +
+                    '<select class="rk-st-sel w-full text-[11px] border border-slate-200 rounded-lg p-1.5 bg-white">' + STATUS_LIST_.map(s => '<option' + (s === st ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' +
                     '<input type="text" maxlength="200" class="rk-st-note w-full text-[11px] border border-slate-200 rounded-lg p-1.5" placeholder="Catatan singkat (opsional)">' +
                     '<button type="button" onclick="saveStatus_(this)" class="w-full text-[11px] font-bold text-white bg-slate-700 hover:bg-slate-800 rounded-lg py-1.5">Simpan Status</button>';
-            } else if (Auth.info().aktif && !Auth.user()) {
-                h += '<button type="button" onclick="Auth.openModal(\'Masuk untuk mengubah status titik panas.\')" class="text-[11px] font-semibold text-emerald-700 underline">Masuk untuk mengubah status</button>';
             }
             return h + '</div>';
         }
+        function savedPetugas_() { try { return localStorage.getItem('rk_nama_petugas') || ''; } catch (e) { return ''; } }
         async function saveStatus_(btn) {
             const box = btn.closest('.rk-st'); if (!box) return;
-            const key = box.dataset.key, status = box.querySelector('.rk-st-sel').value, catatan = box.querySelector('.rk-st-note').value.trim();
+            const key = box.dataset.key, status = box.querySelector('.rk-st-sel').value, catatan = box.querySelector('.rk-st-note').value.trim(), namaEl = box.querySelector('.rk-st-nama'), namaPetugas = ((namaEl && namaEl.value.trim()) || (document.getElementById('report-pelapor') || {}).value || '-').slice(0, 60);
+            try { if (namaPetugas !== '-') localStorage.setItem('rk_nama_petugas', namaPetugas); } catch (e) { /* abaikan */ }
             btn.disabled = true; const old = btn.textContent; btn.textContent = 'Menyimpan...';
             try {
-                Auth.need('mengubah status titik panas');
-                const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'setStatusTitik', hotspotKey: key, status, catatan, pelapor: (document.getElementById('report-pelapor') || {}).value || '-' }), timeout: 60000 });
+                const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'setStatusTitik', hotspotKey: key, status, catatan, pelapor: namaPetugas }), timeout: 60000 });
                 globalStatus[key] = r.item;
                 Notify.success('Status titik: ' + status + '.', 'Status tersimpan');
                 map.closePopup();
@@ -1690,14 +1556,6 @@
             el.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px';
             el.innerHTML = '<span class="text-xs font-bold" style="color:var(--mut)">VERIFIKASI LAPANGAN 24 JAM (' + v.total + ' titik)</span>' + chip(v.belum, 'belum dicek', 'Belum dicek') + chip(v.ditangani, 'ditangani', 'Sedang ditangani') + chip(v.padam, 'api padam', 'Api padam') + chip(v.bukanApi, 'bukan api', 'Bukan api');
         }
-        // Penegakan login pada tombol laporan
-        (function () {
-            const guard = (name) => (e) => { try { Auth.need(name); } catch (err) { e.stopImmediatePropagation(); e.preventDefault(); } };
-            document.addEventListener('DOMContentLoaded', () => {
-                [['btn-manual-report', 'mengirim laporan manual'], ['btn-water-report', 'menambah sumber air']].forEach(([id, n]) => { const b = document.getElementById(id); if (b) b.addEventListener('click', guard(n), true); });
-            });
-        })();
-
         // ================= KEAMANAN SISI KLIEN =================
         // URL dari server hanya boleh https (foto Drive/Google); selain itu dibuang.
         function safeUrl_(u) {
@@ -2101,7 +1959,45 @@
         };
         legend.addTo(map);
 
-        // ================= v6.2: LAPISAN JALAN & SUNGAI (OpenStreetMap) + JARAK AKSES =================
+        // ================= LAPISAN SIAP PAKAI: JALAN & SUNGAI (OpenStreetMap) + LAHAN GAMBUT (KLHK) =================
+        // Tidak ada langkah unduh manual. Cukup centang layer di kontrol lapisan peta.
+        //  - Jalan & sungai/kanal: diambil otomatis dari OpenStreetMap saat pertama dipakai, lalu disimpan di perangkat (IndexedDB, 30 hari).
+        //  - Lahan gambut: ditampilkan langsung dari layanan peta resmi KLHK (SiPPEG, Fungsi Ekosistem Gambut 1:50.000).
+
+        /** Penyimpanan lokal (IndexedDB) agar data lapisan tidak diunduh ulang. Bila IndexedDB tidak tersedia, memakai memori. */
+        const GeoCache = (function () {
+            const DB = 'rk-geo', ST = 'layers'; let dbp = null; const mem = {};
+            function open() {
+                if (dbp) return dbp;
+                dbp = new Promise((res) => {
+                    try {
+                        const rq = indexedDB.open(DB, 1);
+                        rq.onupgradeneeded = () => { try { rq.result.createObjectStore(ST); } catch (e) { /* abaikan */ } };
+                        rq.onsuccess = () => res(rq.result);
+                        rq.onerror = () => res(null);
+                        rq.onblocked = () => res(null);
+                    } catch (e) { res(null); }
+                });
+                return dbp;
+            }
+            async function get(key) {
+                const db = await open(); if (!db) return mem[key] || null;
+                return new Promise((res) => {
+                    try { const r = db.transaction(ST, 'readonly').objectStore(ST).get(key); r.onsuccess = () => res(r.result || null); r.onerror = () => res(mem[key] || null); }
+                    catch (e) { res(mem[key] || null); }
+                });
+            }
+            async function set(key, val) {
+                mem[key] = val;
+                const db = await open(); if (!db) return false;
+                return new Promise((res) => {
+                    try { const tx = db.transaction(ST, 'readwrite'); tx.objectStore(ST).put(val, key); tx.oncomplete = () => res(true); tx.onerror = () => res(false); tx.onabort = () => res(false); }
+                    catch (e) { res(false); }
+                });
+            }
+            return { get, set };
+        })();
+
         const Osm = (function () {
             const STYLE = [
                 { name: 'Jalan utama', color: '#ea580c', weight: 3.2, group: 'jalan' },
@@ -2110,10 +2006,100 @@
                 { name: 'Sungai', color: '#0284c7', weight: 3, group: 'air' },
                 { name: 'Kanal/parit', color: '#38bdf8', weight: 1.6, group: 'air' }
             ];
-            let meta = null, data = null, loading = null;
+            const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+            const KEY = 'osm-rakumpit-v1', TTL = 30 * 86400000, MARGIN = 0.02, TOL = [0.00012, 0.00025, 0.0005], MAX_POINTS = 160000, TILES = 2;
+            let meta = null, data = null, loading = null, built = false, bgRefresh = false, prefetched = false;
             const canvas = L.canvas({ padding: 0.3 });
             const groups = { jalan: L.layerGroup(), air: L.layerGroup() };
-            let built = false;
+
+            /* ---------- kotak batas wilayah dari GEOJSON kelurahan ---------- */
+            function bbox() {
+                let s = 90, w = 180, n = -90, e = -180;
+                const walk = (c) => {
+                    if (typeof c[0] === 'number') { const lo = c[0], la = c[1]; if (la < s) s = la; if (la > n) n = la; if (lo < w) w = lo; if (lo > e) e = lo; }
+                    else c.forEach(walk);
+                };
+                GEOJSON.features.forEach(f => walk(f.geometry.coordinates));
+                return { s: s - MARGIN, w: w - MARGIN, n: n + MARGIN, e: e + MARGIN };
+            }
+
+            /* ---------- pengambilan dari Overpass (OpenStreetMap) ---------- */
+            function kelasOf(t) {
+                const h = t.highway, w = t.waterway;
+                if (h) {
+                    if (/^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$/.test(h)) return 0;
+                    if (/^(unclassified|residential|service|living_street|road)$/.test(h)) return 1;
+                    if (/^(track|path)$/.test(h)) return 2;
+                    return -1;
+                }
+                if (w) { if (/^(river|stream)$/.test(w)) return 3; if (/^(canal|drain|ditch)$/.test(w)) return 4; }
+                return -1;
+            }
+            function simplify(pts, tol) {
+                const n = pts.length; if (n <= 2) return pts.slice();
+                const keep = new Array(n).fill(false), stack = [[0, n - 1]], t2 = tol * tol; keep[0] = keep[n - 1] = true;
+                while (stack.length) {
+                    const [a, b] = stack.pop(); if (b <= a + 1) continue;
+                    const ax = pts[a][1], ay = pts[a][0], dx = pts[b][1] - ax, dy = pts[b][0] - ay, l2 = dx * dx + dy * dy; let maxD = -1, idx = -1;
+                    for (let i = a + 1; i < b; i++) {
+                        const px = pts[i][1] - ax, py = pts[i][0] - ay; let d2;
+                        if (l2 === 0) d2 = px * px + py * py;
+                        else { const t = Math.max(0, Math.min(1, (px * dx + py * dy) / l2)), cx = t * dx - px, cy = t * dy - py; d2 = cx * cx + cy * cy; }
+                        if (d2 > maxD) { maxD = d2; idx = i; }
+                    }
+                    if (maxD > t2) { keep[idx] = true; stack.push([a, idx], [idx, b]); }
+                }
+                return pts.filter((_, i) => keep[i]);
+            }
+            function encode(elements, tol) {
+                const lines = [], seen = {}; let total = 0;
+                elements.forEach(el => {
+                    if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) return;
+                    if (el.id !== undefined) { if (seen[el.id]) return; seen[el.id] = 1; }
+                    const k = kelasOf(el.tags || {}); if (k < 0) return;
+                    let pts = el.geometry.filter(g => g && typeof g.lat === 'number' && typeof g.lon === 'number').map(g => [g.lat, g.lon]);
+                    if (pts.length < 2) return;
+                    pts = simplify(pts, tol);
+                    const line = [k]; let pl = 0, pg = 0;
+                    pts.forEach((p, i) => { const la = Math.round(p[0] * 1e5), lo = Math.round(p[1] * 1e5); if (i === 0) line.push(la, lo); else line.push(la - pl, lo - pg); pl = la; pg = lo; });
+                    total += pts.length; lines.push(line);
+                });
+                return { lines, points: total };
+            }
+            function query(s, w, n, e) {
+                const bb = '(' + [s, w, n, e].map(v => v.toFixed(4)).join(',') + ')';
+                return '[out:json][timeout:55];(' +
+                    'way["highway"~"^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|unclassified|residential|service|living_street|road|track|path)$"]' + bb + ';' +
+                    'way["waterway"~"^(river|stream|canal|drain|ditch)$"]' + bb + ';);out geom qt;';
+            }
+            async function overpassTile(q) {
+                for (let round = 0; round < 2; round++) {
+                    for (const url of OVERPASS) {
+                        const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 75000);
+                        try {
+                            const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
+                            clearTimeout(t);
+                            if (res.ok) { const j = await res.json(); if (j && Array.isArray(j.elements)) return j.elements; }
+                        } catch (e) { clearTimeout(t); /* coba server berikutnya */ }
+                    }
+                    await new Promise(r => setTimeout(r, 3000));
+                }
+                throw apiErr_('OSM_FAIL', 'Server OpenStreetMap (Overpass) sedang sibuk atau tidak terjangkau. Coba lagi beberapa saat.', false);
+            }
+            async function fromOverpass(progress) {
+                const b = bbox(); let els = [];
+                for (let i = 0; i < TILES; i++) for (let j = 0; j < TILES; j++) {
+                    if (progress) progress(i * TILES + j + 1, TILES * TILES);
+                    const s = b.s + (b.n - b.s) * i / TILES, n = b.s + (b.n - b.s) * (i + 1) / TILES, w = b.w + (b.e - b.w) * j / TILES, e = b.w + (b.e - b.w) * (j + 1) / TILES;
+                    els = els.concat(await overpassTile(query(s, w, n, e)));
+                }
+                let enc = null;
+                for (const tol of TOL) { enc = encode(els, tol); if (enc.points <= MAX_POINTS) break; }
+                if (!enc || !enc.lines.length) throw apiErr_('OSM_EMPTY', 'OpenStreetMap tidak mengembalikan data jalan/sungai untuk wilayah ini.', false);
+                return { v: 1, updated: new Date().toISOString(), bbox: [b.s, b.w, b.n, b.e], lines: enc.lines };
+            }
+
+            /* ---------- dekode & gambar ---------- */
             function decode(j) {
                 const out = [];
                 (j.lines || []).forEach(l => {
@@ -2132,19 +2118,48 @@
                     groups[s.group].addLayer(pl);
                 });
             }
-            async function load() {
-                if (data) return data;
-                if (loading) return loading;
+
+            /* ---------- sumber data: cache perangkat -> salinan server -> OpenStreetMap langsung ---------- */
+            async function fresh(silent) {
+                let j = null;
+                if (!meta || meta.ada !== false) {
+                    try { const r = await apiFetch_(GAS_API_URL + '?action=lapisan&_=' + Math.floor(Date.now() / 3600000), { timeout: 90000, retries: 1 }); if (r && r.lines && r.lines.length) j = r; }
+                    catch (e) { /* salinan server tidak ada: ambil langsung dari OpenStreetMap */ }
+                }
+                if (!j) j = await fromOverpass((i, t) => { const el = document.getElementById('rk-load-text'); if (el && !silent) el.textContent = 'Mengambil jalan & sungai dari OpenStreetMap (' + i + '/' + t + '). Hanya sekali, lalu tersimpan di perangkat...'; });
+                j.saved = Date.now();
+                GeoCache.set(KEY, j);
+                return j;
+            }
+            function refreshLater() {
+                if (bgRefresh) return; bgRefresh = true;
+                setTimeout(() => { fresh(true).catch(() => { /* tetap pakai salinan lama */ }); }, 20000);
+            }
+            function load(silent) {
+                if (data) return Promise.resolve(data);
+                if (loading) {
+                    if (!silent) { Loader.show('Memuat lapisan jalan & sungai...'); loading.then(() => Loader.hide(), () => Loader.hide()); }
+                    return loading;
+                }
                 loading = (async () => {
+                    if (!silent) Loader.show('Memuat lapisan jalan & sungai...');
                     try {
-                        Loader.show('Memuat lapisan jalan & sungai...');
-                        const j = await apiFetch_(GAS_API_URL + '?action=lapisan&_=' + Math.floor(Date.now() / 3600000), { timeout: 90000, retries: 1 });
-                        if (!j || !j.lines) { return null; }
+                        let j = null; const c = await GeoCache.get(KEY);
+                        if (c && c.lines && c.lines.length) { j = c; if (Date.now() - (c.saved || 0) > TTL) refreshLater(); }
+                        if (!j) j = await fresh(silent);
                         data = decode(j); build(); return data;
-                    } finally { Loader.hide(); loading = null; }
+                    } finally { if (!silent) Loader.hide(); loading = null; }
                 })();
                 return loading;
             }
+            /** Muat diam-diam bila sudah ada di perangkat / di server, agar jarak di popup langsung tampil. */
+            function prefetch() {
+                if (data || loading || prefetched) return; prefetched = true;
+                if (navigator.connection && navigator.connection.saveData) return;
+                GeoCache.get(KEY).then(c => { if ((c && c.lines) || (meta && meta.ada)) setTimeout(() => { load(true).catch(() => { /* abaikan */ }); }, 2500); }).catch(() => { /* abaikan */ });
+            }
+
+            /* ---------- jarak ke jalan & sungai terdekat ---------- */
             function dist(lat, lng, aLa, aLo, bLa, bLo) {
                 const kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
                 const ax = (aLo - lng) * kx, ay = (aLa - lat) * ky, bx = (bLo - lng) * kx, by = (bLa - lat) * ky, dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
@@ -2182,11 +2197,78 @@
                 if (w) h += '<br>Sumber air tercatat: ' + esc(w.w.jenis) + ' ' + esc(w.w.nama) + ' (' + fmtD(w.m) + ')';
                 return h;
             }
-            function setMeta(m) { meta = m || null; }
+            function setMeta(m) { meta = m || null; prefetch(); }
             return { groups, load, accessHtml, setMeta, meta: () => meta, ready: () => !!data };
         })();
 
-        // Kontrol lapisan: tambah dua overlay OSM (dimuat saat pertama diaktifkan)
+        const Peat = (function () {
+            // Layanan peta resmi KLHK (Direktorat Pengendalian Kerusakan Ekosistem Gambut), SiPPEG
+            const BASE = 'https://sippeg.menlhk.go.id/arcgis/rest/services/FEG_50K_Nasional_Agustus_2022/MapServer';
+            const FIELDS = 'NAMA_KHG,KODE_KHG,PEAT_THICK,FEG_50K,FEG_PEAT,Min_Thick,Luas_Ha';
+            const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            const ATTR = 'Peta gambut &copy; KLHK (SiPPEG), Fungsi Ekosistem Gambut 1:50.000';
+            const cache = {};
+            const Layer = L.TileLayer.extend({
+                getTileUrl: function (c) {
+                    const b = this._tileCoordsToBounds(c), sw = L.CRS.EPSG3857.project(b.getSouthWest()), ne = L.CRS.EPSG3857.project(b.getNorthEast());
+                    return BASE + '/export?bbox=' + [sw.x, sw.y, ne.x, ne.y].map(v => v.toFixed(2)).join(',') + '&bboxSR=3857&imageSR=3857&size=256,256&dpi=96&format=png32&transparent=true&layers=show:0&f=image';
+                }
+            });
+            const layer = new Layer('', { tileSize: 256, maxZoom: 18, opacity: 0.7, zIndex: 4, attribution: ATTR, errorTileUrl: BLANK });
+            let ok = 0, bad = 0, warned = false, marker = null;
+            layer.on('tileload', () => { ok++; });
+            layer.on('tileerror', () => { bad++; if (!warned && bad >= 6 && ok === 0) { warned = true; Notify.warn('Layanan peta gambut KLHK (SiPPEG) tidak merespons. Coba lagi beberapa saat.', 'Layer gambut', { timeout: 8000 }); } });
+
+            /** Cek gambut di satu titik (query ke layanan KLHK). Hasil disimpan per titik. */
+            function lookup(lat, lng) {
+                const k = lat.toFixed(4) + ',' + lng.toFixed(4);
+                if (cache[k]) return cache[k];
+                const url = BASE + '/0/query?f=json&geometry=' + lng + ',' + lat + '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=' + encodeURIComponent(FIELDS) + '&returnGeometry=false';
+                cache[k] = apiFetch_(url, { timeout: 20000, retries: 1 }).then(r => {
+                    if (r && r.error) throw apiErr_('PEAT', 'Layanan peta gambut KLHK menolak permintaan.', false);
+                    const f = r && r.features && r.features[0];
+                    return f ? { gambut: true, a: f.attributes || {} } : { gambut: false };
+                }).catch(e => { delete cache[k]; throw e; });
+                return cache[k];
+            }
+            const num = (v) => (typeof v === 'number' && isFinite(v)) ? (Math.round(v * 10) / 10).toString().replace('.', ',') : '';
+            function html(res) {
+                if (!res || !res.gambut) return 'Lahan gambut: <b>di luar area gambut</b> pada peta KLHK (FEG 1:50.000)';
+                const a = res.a || {}, fungsi = String(a.FEG_50K || a.FEG_PEAT || '').trim(), tebal = String(a.PEAT_THICK || '').trim(), mn = num(a.Min_Thick);
+                let h = 'Lahan gambut: <b style="color:#b45309">YA</b>';
+                if (a.NAMA_KHG) h += ' &middot; KHG ' + esc(a.NAMA_KHG);
+                h += '<br>Fungsi: <b>' + esc(fungsi || '-') + '</b>';
+                if (tebal || mn) h += ' &middot; Tebal: ' + esc(tebal || '-') + (mn ? ' (min. ' + mn + ' m)' : '');
+                return h;
+            }
+
+            /* ---------- panel legenda + cek titik (muncul saat layer gambut aktif) ---------- */
+            const panel = L.control({ position: 'bottomright' });
+            panel.onAdd = function () {
+                const div = L.DomUtil.create('div'); L.DomEvent.disableClickPropagation(div); L.DomEvent.disableScrollPropagation(div);
+                div.style.cssText = 'background:rgba(255,255,255,.96);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.25);padding:8px 10px;font:11px/1.5 system-ui,sans-serif;color:#1e293b;max-width:230px';
+                div.innerHTML = '<b>Lahan Gambut (KLHK)</b>' +
+                    '<div style="margin:5px 0 1px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgb(0,244,26),rgb(235,247,40),rgb(249,30,22));border:1px solid #cbd5e1"></div>' +
+                    '<div style="display:flex;justify-content:space-between;color:#475569"><span>tipis 0 m</span><span>8 m</span><span>tebal 16,5 m</span></div>' +
+                    '<div style="color:#64748b;margin:3px 0 5px">Warna = ketebalan gambut minimum. Garis abu-abu = batas satuan gambut.</div>' +
+                    '<div id="peat-res" style="border-top:1px dashed #cbd5e1;padding-top:5px">Klik peta untuk cek gambut di titik itu.</div>';
+                return div;
+            };
+            function clearMarker() { if (marker) { map.removeLayer(marker); marker = null; } }
+            map.on('overlayadd', (e) => { if (e.layer === layer) { ok = 0; bad = 0; warned = false; panel.addTo(map); } });
+            map.on('overlayremove', (e) => { if (e.layer === layer) { map.removeControl(panel); clearMarker(); } });
+            map.on('click', async (e) => {
+                if (!map.hasLayer(layer)) return;
+                const box = document.getElementById('peat-res'); if (!box) return;
+                clearMarker(); marker = L.circleMarker(e.latlng, { radius: 6, color: '#0f172a', weight: 2, fillColor: '#fde047', fillOpacity: 1, interactive: false }).addTo(map);
+                box.innerHTML = 'Memeriksa gambut di ' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5) + '...';
+                try { const r = await lookup(e.latlng.lat, e.latlng.lng); box.innerHTML = html(r); }
+                catch (err) { box.innerHTML = 'Info gambut titik ini tidak dapat dimuat sekarang. Warna peta tetap dapat dibaca.'; }
+            });
+            return { layer, lookup, html };
+        })();
+
+        // Kontrol lapisan: tiga overlay siap pakai (jalan, sungai & kanal, lahan gambut). Data dimuat otomatis saat dicentang.
         (function () {
             const attr = '&copy; kontributor OpenStreetMap';
             let attrOn = 0;
@@ -2194,13 +2276,12 @@
             if (lc) {
                 lc.addOverlay(Osm.groups.jalan, 'Jalan (OpenStreetMap)');
                 lc.addOverlay(Osm.groups.air, 'Sungai &amp; kanal (OpenStreetMap)');
+                lc.addOverlay(Peat.layer, 'Lahan gambut (KLHK, FEG 1:50.000)');
             }
             map.on('overlayadd', async (e) => {
                 if (e.layer !== Osm.groups.jalan && e.layer !== Osm.groups.air) return;
                 if (!attrOn++) map.attributionControl.addAttribution(attr);
                 if (!Osm.ready()) {
-                    const m = Osm.meta();
-                    if (m && m.ada === false) { Notify.info('Lapisan jalan & sungai belum diunduh. Admin: jalankan menu Karhutla Rakumpit > Perbarui lapisan jalan & sungai (OSM).', 'Belum tersedia', { timeout: 9000 }); return; }
                     try { await Osm.load(); } catch (err) { Notify.error(friendlyError_(err), 'Gagal memuat lapisan'); }
                     if (!Osm.ready()) return;
                     // gambar ulang karena lapisan baru terisi
@@ -2208,27 +2289,28 @@
                 }
             });
             map.on('overlayremove', (e) => { if ((e.layer === Osm.groups.jalan || e.layer === Osm.groups.air) && --attrOn <= 0) { attrOn = 0; map.attributionControl.removeAttribution(attr); } });
-            // isi blok akses saat popup titik panas dibuka (data OSM dimuat sekali bila belum ada)
+            // isi blok akses + info gambut saat popup titik panas dibuka
             map.on('popupopen', async (e) => {
                 const root = e.popup && e.popup.getElement && e.popup.getElement(); if (!root) return;
                 const box = root.querySelector('.rk-acc'); if (!box) return;
                 const lat = parseFloat(box.dataset.lat), lng = parseFloat(box.dataset.lng);
-                const fill = () => { box.innerHTML = Osm.accessHtml(lat, lng); };
+                const fill = () => {
+                    box.innerHTML = Osm.accessHtml(lat, lng) + '<div class="rk-peat" style="margin-top:3px">Memeriksa lahan gambut...</div>';
+                    Peat.lookup(lat, lng).then(r => { const el = box.querySelector('.rk-peat'); if (el) { el.innerHTML = Peat.html(r); e.popup.update(); } })
+                        .catch(() => { const el = box.querySelector('.rk-peat'); if (el) { el.textContent = 'Info lahan gambut belum dapat dimuat.'; e.popup.update(); } });
+                    e.popup.update();
+                };
                 fill();
-                const m = Osm.meta();
-                if (!Osm.ready() && !(m && m.ada === false)) {
+                if (!Osm.ready()) {
                     box.innerHTML = 'Memuat jarak jalan/sungai...';
-                    try { await Osm.load(); } catch (err) { /* abaikan */ }
+                    try { await Osm.load(true); } catch (err) { /* abaikan */ }
                     fill();
                 }
             });
         })();
 
-        // Tombol laporan titik panas di popup: wajib login bila diaktifkan
+        // Ringkasan verifikasi digambar setiap kali bagian analisis dirender
         (function () {
-            const orig = window.openReportModal;
-            if (typeof orig === 'function') window.openReportModal = function () { try { Auth.need('mengirim laporan kegiatan'); } catch (err) { return; } return orig.apply(this, arguments); };
-            // render ringkasan verifikasi setiap kali bagian analisis digambar
             const ris = window.renderInsightSections_;
             if (typeof ris === 'function') window.renderInsightSections_ = function () { ris.apply(this, arguments); try { renderVerif_(); } catch (e) { /* abaikan */ } };
         })();
@@ -2541,7 +2623,6 @@
                 globalLuasServer = result.luas || null;
                 globalArsip = Array.isArray(result.arsipLaporan) ? result.arsipLaporan : [];
                 globalStatus = (result && result.statusTitik) || {};
-                Auth.setInfo(result && result.auth);
                 Osm.setMeta(result && result.lapisanOsm);
                 globalReportsByKey = {};
                 if (result && Array.isArray(result.reports)) {
