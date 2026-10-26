@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- KEAMANAN: kebijakan konten, referrer, dan anti-framing (untuk GitHub Pages) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://script.google.com https://script.googleusercontent.com https://api.open-meteo.com https://air-quality-api.open-meteo.com https://api.bmkg.go.id https://cuaca.bmkg.go.id https://sippeg.menlhk.go.id https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; worker-src 'self'; frame-src 'none'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' data: blob: https://kspservices.big.go.id https://overpass-api.de https://overpass.kumi.systems https://script.google.com https://script.googleusercontent.com https://api.open-meteo.com https://air-quality-api.open-meteo.com https://api.bmkg.go.id https://cuaca.bmkg.go.id; worker-src 'self'; frame-src; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="robots" content="noindex, nofollow">
     <script>
@@ -636,8 +636,52 @@
         @media print { #rk-loader, #rk-toasts { display:none !important; } }
     </style>
     <style>
-        /* blok akses & info gambut di popup titik panas */
-        .leaflet-popup-content .rk-acc { font-size: 11px; line-height: 1.45; color: #334155; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 8px; }
+        /* v6.3: tombol admin, modal admin, chip lapisan, kontrol cek lokasi */
+        #btn-admin { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a; cursor: pointer; }
+        #btn-admin:hover { background: #ecfdf5; border-color: #10b981; }
+        #btn-admin.on { background: #0d4632; color: #f0c75e; border-color: #0d4632; }
+        html.dark #btn-admin { background: #1e293b; color: #e2e8f0; border-color: #475569; }
+        html.dark #btn-admin.on { background: #0d4632; color: #f0c75e; }
+        .adm-ov { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; background: rgba(15,23,42,.6); backdrop-filter: blur(3px); padding: 14px; overflow-y: auto; }
+        .adm-ov.open { display: flex; }
+        .adm-card { background: #fff; color: #0f172a; border-radius: 18px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,.35); max-height: 92vh; overflow-y: auto; width: min(94vw, 640px); }
+        html.dark .adm-card { background: #0f172a; color: #e2e8f0; }
+        .adm-card h3 { font-size: 17px; font-weight: 800; margin: 0 0 4px; }
+        .adm-hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+        .adm-sub { font-size: 12px; color: #64748b; margin: 0 0 10px; }
+        .adm-warn { font-size: 12px; color: #92400e; background: #fef3c7; border-radius: 8px; padding: 6px 8px; margin: 0 0 10px; }
+        .adm-msg { font-size: 12px; min-height: 16px; margin: 8px 0 0; color: #b91c1c; }
+        .adm-in { width: 100%; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 10px; background: #fff; color: #0f172a; }
+        html.dark .adm-in { background: #1e293b; color: #e2e8f0; border-color: #475569; }
+        .adm-lb { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin: 8px 0 0; }
+        .adm-lb .adm-in { margin-top: 3px; font-weight: 400; }
+        .adm-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+        .adm-btn { font-size: 12px; font-weight: 700; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; border-radius: 10px; padding: 7px 14px; cursor: pointer; }
+        .adm-btn:hover { background: #f1f5f9; }
+        .adm-btn:disabled { opacity: .5; cursor: wait; }
+        .adm-btn.pri { background: #0d4632; border-color: #0d4632; color: #fff; }
+        .adm-btn.dng { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
+        html.dark .adm-btn { background: #1e293b; color: #e2e8f0; border-color: #475569; }
+        .adm-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid #e2e8f0; margin-bottom: 12px; }
+        .adm-tab { font-size: 12px; font-weight: 700; padding: 8px 12px; border: 0; background: none; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; }
+        .adm-tab.on { color: #0d4632; border-bottom-color: #0d4632; }
+        html.dark .adm-tab.on { color: #f0c75e; border-bottom-color: #f0c75e; }
+        .adm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .adm-kv { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; font-size: 11px; color: #64748b; }
+        html.dark .adm-kv { background: #1e293b; border-color: #334155; }
+        .adm-kv b { display: block; font-size: 13px; color: inherit; margin-top: 2px; }
+        .adm-chk { display: flex; gap: 8px; align-items: center; font-size: 13px; margin: 6px 0; }
+        .adm-list { display: flex; flex-direction: column; gap: 6px; }
+        .adm-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+        .adm-item small { color: #64748b; }
+        .adm-add { display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 8px; margin-top: 12px; }
+        @media (max-width: 560px) { .adm-add { grid-template-columns: 1fr !important; } }
+        .rk-chip { background: rgba(255,255,255,.96); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.25); padding: 6px 10px; font: 11px/1.45 system-ui, sans-serif; max-width: 250px; margin-bottom: 4px; }
+        .rk-chip-ok { color: #15803d; } .rk-chip-info { color: #475569; } .rk-chip-warn { color: #b45309; } .rk-chip-err { color: #b91c1c; font-weight: 600; }
+        .rk-pick a { width: 30px; height: 30px; display: flex; align-items: flex-start; justify-content: center; color: #334155; background: #fff; }
+        .rk-pick.on a { background: #0d4632; color: #f0c75e; }
+        .rk-peat { display: inline-block; background: #7c2d12; color: #fff; font-weight: 700; border-radius: 6px; padding: 0 6px; }
+        .leaflet-popup-content .rk-acc { font-size: 11px; line-height: 1.5; color: #334155; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 8px; }
     </style>
     <script>
         // Terapkan tema tersimpan SEBELUM body dirender, supaya tidak "berkedip"
@@ -684,6 +728,7 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <button id="btn-admin" type="button" title="Masuk sebagai admin"></button>
                 <!-- Tombol Ganti Tema Gelap/Terang -->
                 <button id="btn-theme-toggle" type="button" title="Ganti tema gelap/terang"
                     class="inline-flex items-center justify-center w-9 h-9 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-xl transition-all active:scale-95 cursor-pointer">
@@ -694,6 +739,7 @@
         </div>
         <nav class="md:hidden flex gap-1 overflow-x-auto px-3 pb-2 text-xs font-semibold"><a href="#dashboard" data-nav="0" class="nav-link">Dashboard</a><a href="#peta-section" data-nav="1" class="nav-link">Peta</a><a href="#daftar-hotspot" data-nav="2" class="nav-link">Daftar Hotspot</a><a href="#stats-section" data-nav="3" class="nav-link">Statistik</a><a href="#report-history" data-nav="4" class="nav-link">Riwayat Laporan</a><a href="#analisis-rawan" data-nav="5" class="nav-link">Analisis</a></nav>
     </header>
+
 
     <!-- Main Container -->
     <main id="dashboard" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow space-y-6">
@@ -1461,6 +1507,9 @@
         async function apiFetch_(url, opts) {
             const o = Object.assign({ method: 'GET', body: undefined, timeout: 45000, retries: 1 }, opts || {});
             if (o.method !== 'GET') o.retries = 0; // jangan mengirim ganda data yang sudah terkirim
+            if (o.method !== 'GET' && typeof o.body === 'string' && typeof Admin !== 'undefined' && Admin.token()) {
+                try { const b = JSON.parse(o.body); if (b && typeof b === 'object' && !b.adminToken && /^(admin|setStatusTitik$|updateWaterSource$|deleteWaterSource$)/.test(b.action || '')) { b.adminToken = Admin.token(); o.body = JSON.stringify(b); } } catch (e) { /* abaikan */ }
+            }
             let lastErr = null;
             for (let attempt = 0; attempt <= o.retries; attempt++) {
                 const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), o.timeout);
@@ -1472,6 +1521,7 @@
                     try { json = await res.json(); }
                     catch (e) { throw apiErr_('BAD_RESPONSE', 'Respons server tidak valid. Pastikan URL Web App benar dan dideploy dengan akses "Anyone".', true); }
                     if (json && json.status === 'error') {
+                        if (typeof Admin !== 'undefined' && json.code === 'ADMIN_REQUIRED') { try { Admin.onApiError(json.code); } catch (e) { /* abaikan */ } }
                         throw apiErr_(json.code || 'SERVER', json.message || 'Server menolak permintaan.', json.code !== 'BUSY');
                     }
                     return json;
@@ -1498,7 +1548,7 @@
         window.addEventListener('offline', () => Notify.warn('Koneksi internet terputus. Data terakhir tetap ditampilkan.', 'Offline', { timeout: 0 }));
         window.addEventListener('online', () => Notify.success('Koneksi internet pulih.', 'Kembali online'));
 
-        // ================= STATUS VERIFIKASI TITIK PANAS =================
+        // ================= v6.3: LOGIN ADMIN, PANEL ADMIN, STATUS VERIFIKASI =================
         var globalStatus = {}; // {hotspotKey: {status, catatan, nama, waktu, otomatis}}
         const STATUS_LIST_ = ['Belum dicek', 'Sedang ditangani', 'Api padam', 'Bukan api'];
         const STATUS_STYLE_ = {
@@ -1507,6 +1557,223 @@
             'Api padam': { bg: '#dcfce7', fg: '#15803d', ring: '#16a34a', ic: '●' },
             'Bukan api': { bg: '#e2e8f0', fg: '#475569', ring: '#94a3b8', ic: '✕' }
         };
+        function toCsv_(rows) {
+            const cols = []; rows.forEach(r => Object.keys(r || {}).forEach(k => { if (cols.indexOf(k) < 0 && (r[k] === null || typeof r[k] !== 'object')) cols.push(k); }));
+            const cell = (v) => { v = v === null || v === undefined ? '' : String(v); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return /[",\n\r;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+            return '﻿' + [cols.join(',')].concat(rows.map(r => cols.map(c => cell(r[c])).join(','))).join('\r\n');
+        }
+        function downloadText_(name, text, mime) {
+            const a = document.createElement('a'), url = URL.createObjectURL(new Blob([text], { type: mime || 'text/csv;charset=utf-8' }));
+            a.href = url; a.download = name; document.body.appendChild(a); a.click();
+            setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+        }
+        const Admin = (function () {
+            const SS = 'rk_admin_v1';
+            let info = { kodeDiatur: true, statusTerbuka: false }, sess = null, ringkas = null, tab = 'ringkasan', busy = false;
+            try { const j = JSON.parse(sessionStorage.getItem(SS) || 'null'); if (j && j.token && j.exp > Date.now() + 30000) sess = j; } catch (e) { /* abaikan */ }
+            const q = (id) => document.getElementById(id);
+            function save() { try { if (sess) sessionStorage.setItem(SS, JSON.stringify(sess)); else sessionStorage.removeItem(SS); } catch (e) { /* abaikan */ } }
+            function token() { return sess && sess.exp > Date.now() + 15000 ? sess.token : ''; }
+            function touch() { if (sess) { sess.exp = Date.now() + (sess.ttl || 21600) * 1000; save(); } }
+            const isAdmin = () => !!token();
+            const canStatus = () => isAdmin() || !!info.statusTerbuka;
+            function mk(id, cls) { let el = q(id); if (!el) { el = document.createElement('div'); el.id = id; el.className = cls; document.body.appendChild(el); } return el; }
+            function show(el) { el.classList.add('open'); } function hide(el) { el.classList.remove('open'); }
+            function renderBtn() {
+                const b = q('btn-admin'); if (!b) return;
+                const on = isAdmin();
+                b.classList.toggle('on', on);
+                b.title = on ? 'Panel admin (sudah masuk)' : 'Masuk sebagai admin';
+                b.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' + (on ? '<path d="M9 12l2 2 4-4"/>' : '') + '</svg><span class="hidden sm:inline">' + (on ? 'Admin' : 'Masuk Admin') + '</span>';
+            }
+            async function call(action, extra) {
+                const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, adminToken: token() }, extra || {})), timeout: 60000 });
+                touch(); return r;
+            }
+            /* ---------- login ---------- */
+            function openLogin(reason) {
+                const ov = mk('admin-login', 'adm-ov');
+                ov.innerHTML = '<div class="adm-card" style="max-width:360px" role="dialog" aria-modal="true" aria-labelledby="adm-lt">' +
+                    '<h3 id="adm-lt">Masuk Admin</h3><p class="adm-sub">' + esc(reason || 'Masukkan kode admin untuk mengelola sistem (status titik, sumber air, penerima email).') + '</p>' +
+                    (info.kodeDiatur ? '' : '<p class="adm-warn">Kode admin belum diatur. Buka Spreadsheet &gt; menu <b>Sumber Air &gt; Atur kode admin</b>.</p>') +
+                    '<input id="adm-code" type="password" autocomplete="current-password" maxlength="60" placeholder="Kode admin" class="adm-in">' +
+                    '<p id="adm-msg" class="adm-msg" role="status"></p>' +
+                    '<div class="adm-row"><button type="button" id="adm-go" class="adm-btn pri">Masuk</button><button type="button" id="adm-x" class="adm-btn">Batal</button></div>' +
+                    '<p class="adm-sub" style="margin-top:10px">Melihat dashboard dan mengirim laporan tidak perlu masuk.</p></div>';
+                show(ov);
+                const code = q('adm-code'), msg = q('adm-msg'), go = q('adm-go');
+                const submit = async () => {
+                    if (!code.value) { msg.textContent = 'Kode admin wajib diisi.'; return; }
+                    go.disabled = true; msg.style.color = '#475569'; msg.textContent = 'Memeriksa kode...';
+                    try {
+                        const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'adminLogin', kode: code.value }), timeout: 30000, retries: 0 });
+                        sess = { token: r.token, ttl: r.ttl || 21600, exp: Date.now() + (r.ttl || 21600) * 1000 }; save();
+                        renderBtn(); hide(ov); Notify.success('Anda masuk sebagai admin.', 'Login berhasil');
+                        if (typeof fetchRealtimeData === 'function') fetchRealtimeData(false);
+                        if (openAfter) { const f = openAfter; openAfter = null; f(); }
+                    } catch (e) { msg.style.color = '#b91c1c'; msg.textContent = friendlyError_(e); go.disabled = false; code.select(); }
+                };
+                go.addEventListener('click', submit); q('adm-x').addEventListener('click', () => { openAfter = null; hide(ov); });
+                code.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+                ov.onclick = (e) => { if (e.target === ov) hide(ov); };
+                setTimeout(() => code.focus(), 50);
+            }
+            let openAfter = null;
+            function need(why) { if (isAdmin()) return true; openLogin('Masuk admin untuk ' + (why || 'melanjutkan') + '.'); return false; }
+            function logout(silent) {
+                const t = token(); sess = null; save(); renderBtn();
+                if (t) { apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'adminLogout', adminToken: t }), timeout: 15000, retries: 0 }).catch(() => { }); }
+                const p = q('admin-panel'); if (p) hide(p);
+                if (!silent) Notify.info('Anda sudah keluar dari admin.', 'Logout');
+                if (typeof fetchRealtimeData === 'function') fetchRealtimeData(false);
+            }
+            function onApiError(code) { if (code === 'ADMIN_REQUIRED' && sess) { sess = null; save(); renderBtn(); Notify.warn ? Notify.warn('Sesi admin berakhir. Silakan masuk lagi.', 'Sesi berakhir') : Notify.info('Sesi admin berakhir. Silakan masuk lagi.', 'Sesi berakhir'); } }
+            function setInfo(a) { if (!a) return; info = { kodeDiatur: a.kodeDiatur !== false, statusTerbuka: !!a.statusTerbuka }; renderBtn(); }
+            /* ---------- panel ---------- */
+            const TABS = [['ringkasan', 'Ringkasan'], ['penerima', 'Penerima Email'], ['data', 'Data & Ekspor'], ['keamanan', 'Keamanan']];
+            function kv(k, v) { return '<div class="adm-kv"><span>' + k + '</span><b>' + v + '</b></div>'; }
+            function tabBody() {
+                if (tab === 'ringkasan') {
+                    if (!ringkas) return '<p class="adm-sub">Memuat...</p>';
+                    const r = ringkas, k = r.konteks || {};
+                    return '<div class="adm-grid">' + kv('Versi backend', esc(r.versi)) + kv('Penerima aktif', String((r.penerima || []).filter(p => p.aktif).length)) +
+                        kv('Sisa kuota email hari ini', r.kuotaEmail === null ? '-' : String(r.kuotaEmail)) + kv('Jadwal otomatis (trigger)', String(r.jumlahTrigger)) +
+                        kv('Data satelit terakhir', r.terakhirSatelit ? esc(fmtWib_(r.terakhirSatelit)) : '-') + kv('Kunci NASA FIRMS', r.firmsKey ? 'terisi' : '<span style="color:#b91c1c">BELUM diisi</span>') +
+                        kv('Layanan gambut (BIG)', k.gambutDown ? '<span style="color:#b91c1c">sedang gagal (dicoba lagi otomatis)</span>' : 'normal') + kv('Layanan jalan/sungai (OSM)', k.osmDown ? '<span style="color:#b91c1c">sedang gagal (dicoba lagi otomatis)</span>' : 'normal') + '</div>' +
+                        '<label class="adm-chk"><input type="checkbox" data-adm="notif"' + (r.notifAktif ? ' checked' : '') + '> Email peringatan otomatis aktif</label>' +
+                        '<label class="adm-chk"><input type="checkbox" data-adm="stbuka"' + (r.statusTerbuka ? ' checked' : '') + '> Izinkan status verifikasi diubah tanpa login admin <small>(tidak disarankan)</small></label>' +
+                        '<div class="adm-row" style="margin-top:12px"><button type="button" class="adm-btn pri" data-adm="uji">Kirim email uji</button><button type="button" class="adm-btn" data-adm="muat">Muat ulang</button></div>' +
+                        (r.notifyEmail ? '<p class="adm-sub" style="margin-top:8px">Penerima tambahan dari pengaturan skrip (NOTIFY_EMAIL): ' + esc(r.notifyEmail) + '</p>' : '');
+                }
+                if (tab === 'penerima') {
+                    const list = (ringkas && ringkas.penerima) || [];
+                    return '<p class="adm-sub">Penerima email peringatan titik panas baru, kerawanan Parah, dan ISPU Sangat Tidak Sehat. Satu email dikirim ke semua penerima aktif (tidak saling terlihat).</p>' +
+                        '<div class="adm-list">' + (list.length ? list.map(p => '<div class="adm-item"><div style="min-width:0"><b>' + esc(p.email) + '</b><br><small>' + esc(p.nama || '-') + (p.catatan ? ' · ' + esc(p.catatan) : '') + '</small></div>' +
+                            '<div class="adm-row"><label class="adm-chk" style="margin:0"><input type="checkbox" data-adm="pen-aktif" data-email="' + esc(p.email) + '"' + (p.aktif ? ' checked' : '') + '> aktif</label>' +
+                            '<button type="button" class="adm-btn dng" data-adm="pen-del" data-email="' + esc(p.email) + '">Hapus</button></div></div>').join('') : '<p class="adm-sub"><i>Belum ada penerima.</i></p>') + '</div>' +
+                        '<div class="adm-add"><input id="adm-pe" class="adm-in" type="email" maxlength="120" placeholder="Email penerima"><input id="adm-pn" class="adm-in" maxlength="60" placeholder="Nama (opsional)"><button type="button" class="adm-btn pri" data-adm="pen-add">Tambah</button></div>';
+                }
+                if (tab === 'data') {
+                    const nh = (typeof globalRawHotspotData !== 'undefined' ? globalRawHotspotData : []).length, nw = (typeof globalWaterSources !== 'undefined' ? globalWaterSources : []).length, nr = Object.keys(typeof globalReportsByKey !== 'undefined' ? globalReportsByKey : {}).length;
+                    return '<p class="adm-sub">Unduh data yang sedang dimuat di dashboard sebagai berkas CSV (dapat dibuka di Excel).</p><div class="adm-list">' +
+                        '<div class="adm-item"><span>Titik panas (tarikan terakhir): <b>' + nh + '</b></span><button type="button" class="adm-btn" data-adm="csv-h">Unduh CSV</button></div>' +
+                        '<div class="adm-item"><span>Laporan kegiatan per titik: <b>' + nr + '</b></span><button type="button" class="adm-btn" data-adm="csv-r">Unduh CSV</button></div>' +
+                        '<div class="adm-item"><span>Titik sumber air: <b>' + nw + '</b></span><button type="button" class="adm-btn" data-adm="csv-w">Unduh CSV</button></div>' +
+                        '<div class="adm-item"><span>Status verifikasi titik: <b>' + Object.keys(globalStatus || {}).length + '</b></span><button type="button" class="adm-btn" data-adm="csv-s">Unduh CSV</button></div></div>';
+                }
+                return '<p class="adm-sub">Ganti kode admin. Kode yang sama dipakai untuk masuk, dan untuk sumber air.</p>' +
+                    '<div class="adm-add" style="grid-template-columns:1fr 1fr auto"><input id="adm-k0" class="adm-in" type="password" placeholder="Kode lama" autocomplete="current-password"><input id="adm-k1" class="adm-in" type="password" placeholder="Kode baru (min. 6)" autocomplete="new-password"><button type="button" class="adm-btn pri" data-adm="kode">Simpan</button></div>' +
+                    '<p class="adm-sub" style="margin-top:12px">Sesi admin berlaku sampai 6 jam dan diperpanjang saat dipakai.</p><div class="adm-row"><button type="button" class="adm-btn dng" data-adm="out">Keluar dari admin</button></div>';
+            }
+            function paint() {
+                const ov = q('admin-panel'); if (!ov || !ov.classList.contains('open')) return;
+                ov.querySelector('.adm-tabs').innerHTML = TABS.map(t => '<button type="button" class="adm-tab' + (t[0] === tab ? ' on' : '') + '" data-adm-tab="' + t[0] + '">' + t[1] + '</button>').join('');
+                ov.querySelector('.adm-body').innerHTML = tabBody();
+            }
+            async function reload(silent) {
+                try { const r = await call('adminRingkas'); ringkas = r.ringkas; paint(); }
+                catch (e) { if (!silent) Notify.error(friendlyError_(e), 'Gagal memuat panel'); }
+            }
+            function openPanel() {
+                if (!isAdmin()) { openAfter = openPanel; openLogin(); return; }
+                const ov = mk('admin-panel', 'adm-ov');
+                if (!ov.dataset.ready) {
+                    ov.dataset.ready = '1';
+                    ov.innerHTML = '<div class="adm-card" style="max-width:640px;width:100%" role="dialog" aria-modal="true" aria-label="Panel admin"><div class="adm-hd"><h3>Panel Admin</h3><button type="button" class="adm-btn" data-adm="close">Tutup</button></div><div class="adm-tabs"></div><div class="adm-body"></div></div>';
+                    ov.addEventListener('click', onPanelClick); ov.addEventListener('change', onPanelChange);
+                }
+                show(ov); paint(); reload(true);
+            }
+            async function guarded(fn) { if (busy) return; busy = true; try { await fn(); } catch (e) { Notify.error(friendlyError_(e), 'Gagal'); } finally { busy = false; } }
+            function onPanelClick(e) {
+                const ov = q('admin-panel');
+                if (e.target === ov) { hide(ov); return; }
+                const tb = e.target.closest('[data-adm-tab]'); if (tb) { tab = tb.dataset.admTab; paint(); return; }
+                const b = e.target.closest('button[data-adm]'); if (!b) return;
+                const act = b.dataset.adm, em = b.dataset.email;
+                if (act === 'close') hide(ov);
+                else if (act === 'muat') guarded(() => reload(false));
+                else if (act === 'out') logout();
+                else if (act === 'uji') guarded(async () => { b.disabled = true; try { const r = await call('adminUjiEmail'); Notify.success('Email uji dikirim ke ' + r.penerima + ' penerima.', 'Terkirim'); reload(true); } finally { b.disabled = false; } });
+                else if (act === 'pen-add') guarded(async () => {
+                    const email = q('adm-pe').value.trim(), nama = q('adm-pn').value.trim();
+                    if (!/^[^@\s,;]+@[^@\s,;]+\.[^@\s,;]+$/.test(email)) throw new Error('Alamat email tidak valid.');
+                    const r = await call('adminPenerimaSimpan', { email, nama, aktif: true }); ringkas.penerima = r.penerima; paint(); Notify.success('Penerima ditambahkan.', 'Tersimpan');
+                });
+                else if (act === 'pen-del') guarded(async () => { if (!confirm('Hapus penerima ' + em + '?')) return; const r = await call('adminPenerimaHapus', { email: em }); ringkas.penerima = r.penerima; paint(); });
+                else if (act === 'kode') guarded(async () => {
+                    const a = q('adm-k0').value, n = q('adm-k1').value;
+                    if (n.length < 6) throw new Error('Kode baru minimal 6 karakter.');
+                    await call('adminGantiKode', { kodeLama: a, kodeBaru: n }); q('adm-k0').value = q('adm-k1').value = ''; Notify.success('Kode admin diganti.', 'Tersimpan');
+                });
+                else if (act.indexOf('csv-') === 0) {
+                    const d = new Date().toISOString().slice(0, 10);
+                    const rows = act === 'csv-h' ? (globalRawHotspotData || []) : act === 'csv-w' ? (globalWaterSources || []) : act === 'csv-r' ? Object.values(globalReportsByKey || {}) :
+                        Object.keys(globalStatus || {}).map(k => Object.assign({ hotspotKey: k }, globalStatus[k]));
+                    if (!rows.length) { Notify.info('Tidak ada data untuk diunduh.', 'Kosong'); return; }
+                    downloadText_('poslap-rakumpit-' + ({ 'csv-h': 'titikpanas', 'csv-w': 'sumberair', 'csv-r': 'laporan', 'csv-s': 'status' })[act] + '-' + d + '.csv', toCsv_(rows));
+                }
+            }
+            function onPanelChange(e) {
+                const t = e.target.closest('input[data-adm]'); if (!t) return;
+                const act = t.dataset.adm;
+                if (act === 'notif' || act === 'stbuka') guarded(async () => {
+                    const r = await call('adminPengaturan', act === 'notif' ? { notifAktif: t.checked } : { statusTerbuka: t.checked }); ringkas = r.ringkas; info.statusTerbuka = !!r.ringkas.statusTerbuka; paint();
+                });
+                else if (act === 'pen-aktif') guarded(async () => {
+                    const p = (ringkas.penerima || []).find(x => x.email === t.dataset.email) || { email: t.dataset.email };
+                    const r = await call('adminPenerimaSimpan', { email: p.email, nama: p.nama || '', catatan: p.catatan || '', aktif: t.checked }); ringkas.penerima = r.penerima; paint();
+                });
+            }
+            /* ---------- sumber air: ubah & hapus (admin) ---------- */
+            function wsButtons(id) {
+                if (!isAdmin()) return '';
+                return '<div class="adm-row" style="margin-top:8px"><button type="button" class="adm-btn" data-adm-ws="edit" data-id="' + esc(id) + '">Ubah</button><button type="button" class="adm-btn dng" data-adm-ws="del" data-id="' + esc(id) + '">Hapus</button></div>';
+            }
+            function editWater(id) {
+                const w = (globalWaterSources || []).find(x => x.id === id); if (!w) return;
+                const ov = mk('admin-ws', 'adm-ov');
+                ov.innerHTML = '<div class="adm-card" style="max-width:420px;width:100%"><h3>Ubah titik sumber air</h3>' +
+                    '<label class="adm-lb">Jenis<select id="aw-j" class="adm-in">' + ['Sungai', 'Kolam', 'Sumur', 'Embung'].map(j => '<option' + (j === w.jenis ? ' selected' : '') + '>' + j + '</option>').join('') + '</select></label>' +
+                    '<label class="adm-lb">Nama<input id="aw-n" class="adm-in" maxlength="100" value="' + esc(w.nama) + '"></label>' +
+                    '<div class="adm-add" style="grid-template-columns:1fr 1fr"><label class="adm-lb">Latitude<input id="aw-la" class="adm-in" type="number" step="any" value="' + w.lat + '"></label><label class="adm-lb">Longitude<input id="aw-lo" class="adm-in" type="number" step="any" value="' + w.lng + '"></label></div>' +
+                    '<label class="adm-lb">Keterangan<textarea id="aw-k" class="adm-in" rows="3" maxlength="500">' + esc(w.keterangan || '') + '</textarea></label>' +
+                    '<p id="aw-m" class="adm-msg"></p><div class="adm-row"><button type="button" id="aw-ok" class="adm-btn pri">Simpan</button><button type="button" id="aw-x" class="adm-btn">Batal</button></div></div>';
+                show(ov); q('aw-x').onclick = () => hide(ov); ov.onclick = (e) => { if (e.target === ov) hide(ov); };
+                q('aw-ok').onclick = async () => {
+                    const lat = parseFloat(q('aw-la').value), lng = parseFloat(q('aw-lo').value), nama = q('aw-n').value.trim(), m = q('aw-m');
+                    if (!nama) { m.textContent = 'Nama wajib diisi.'; return; }
+                    if (isNaN(lat) || isNaN(lng)) { m.textContent = 'Koordinat tidak valid.'; return; }
+                    q('aw-ok').disabled = true; m.style.color = '#475569'; m.textContent = 'Menyimpan...';
+                    try {
+                        const r = await call('updateWaterSource', { id, jenis: q('aw-j').value, nama, lat, lng, keterangan: q('aw-k').value.trim(), pelapor: w.pelapor || '-' });
+                        hide(ov); if (r.item) upsertWater_(r.item); Notify.success('Titik sumber air diperbarui.', 'Tersimpan'); map.closePopup(); fetchRealtimeData(false);
+                    } catch (e) { m.style.color = '#b91c1c'; m.textContent = friendlyError_(e); q('aw-ok').disabled = false; }
+                };
+            }
+            async function deleteWater(id) {
+                const w = (globalWaterSources || []).find(x => x.id === id); if (!w) return;
+                if (!confirm('Hapus titik sumber air "' + w.nama + '"? Tindakan ini tidak dapat dibatalkan.')) return;
+                try {
+                    await call('deleteWaterSource', { id });
+                    globalWaterSources = globalWaterSources.filter(x => x.id !== id); renderWaterSources(); if (typeof renderWaterTable === 'function') renderWaterTable();
+                    map.closePopup(); Notify.success('Titik sumber air dihapus.', 'Terhapus'); fetchRealtimeData(false);
+                } catch (e) { Notify.error(friendlyError_(e), 'Gagal menghapus'); }
+            }
+            document.addEventListener('click', (e) => {
+                const b = e.target.closest && e.target.closest('[data-adm-ws]'); if (!b) return;
+                e.preventDefault(); e.stopPropagation();
+                if (!need('mengubah sumber air')) return;
+                if (b.dataset.admWs === 'edit') editWater(b.dataset.id); else deleteWater(b.dataset.id);
+            }, true);
+            document.addEventListener('DOMContentLoaded', () => {
+                const b = q('btn-admin'); if (b) b.addEventListener('click', () => { if (isAdmin()) openPanel(); else openLogin(); });
+                renderBtn();
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape') ['admin-login', 'admin-panel', 'admin-ws'].forEach(id => { const el = q(id); if (el) hide(el); }); });
+            });
+            return { token, isAdmin, canStatus, need, openLogin, openPanel, logout, onApiError, setInfo, wsButtons, info: () => info };
+        })();
+
         function statusBadgeHtml_(st) {
             const s = STATUS_STYLE_[st] || STATUS_STYLE_['Belum dicek'];
             return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + s.bg + ';color:' + s.fg + ';font-weight:700;font-size:11px;padding:2px 9px;border-radius:99px">' + s.ic + ' ' + esc(st) + '</span>';
@@ -1518,22 +1785,22 @@
                 '<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Verifikasi Lapangan</div>' +
                 '<div>' + statusBadgeHtml_(st) + '</div>';
             if (cur) h += '<div class="text-[10.5px] text-slate-500 leading-snug">' + esc(cur.nama || '-') + ' · ' + esc(fmtWib_(cur.waktu)) + (cur.otomatis ? ' (otomatis dari laporan)' : '') + (cur.catatan ? '<br><i>' + esc(cur.catatan) + '</i>' : '') + '</div>';
-            {
-                h += '<input type="text" maxlength="60" class="rk-st-nama w-full text-[11px] border border-slate-200 rounded-lg p-1.5" placeholder="Nama petugas" value="' + esc(savedPetugas_()) + '">' +
-                    '<select class="rk-st-sel w-full text-[11px] border border-slate-200 rounded-lg p-1.5 bg-white">' + STATUS_LIST_.map(s => '<option' + (s === st ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' +
+            if (Admin.canStatus()) {
+                h += '<select class="rk-st-sel w-full text-[11px] border border-slate-200 rounded-lg p-1.5 bg-white">' + STATUS_LIST_.map(s => '<option' + (s === st ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' +
                     '<input type="text" maxlength="200" class="rk-st-note w-full text-[11px] border border-slate-200 rounded-lg p-1.5" placeholder="Catatan singkat (opsional)">' +
                     '<button type="button" onclick="saveStatus_(this)" class="w-full text-[11px] font-bold text-white bg-slate-700 hover:bg-slate-800 rounded-lg py-1.5">Simpan Status</button>';
+            } else {
+                h += '<button type="button" onclick="Admin.openLogin(\'Masuk admin untuk mengubah status titik panas.\')" class="text-[11px] font-semibold text-emerald-700 underline">Masuk admin untuk mengubah status</button>';
             }
             return h + '</div>';
         }
-        function savedPetugas_() { try { return localStorage.getItem('rk_nama_petugas') || ''; } catch (e) { return ''; } }
         async function saveStatus_(btn) {
             const box = btn.closest('.rk-st'); if (!box) return;
-            const key = box.dataset.key, status = box.querySelector('.rk-st-sel').value, catatan = box.querySelector('.rk-st-note').value.trim(), namaEl = box.querySelector('.rk-st-nama'), namaPetugas = ((namaEl && namaEl.value.trim()) || (document.getElementById('report-pelapor') || {}).value || '-').slice(0, 60);
-            try { if (namaPetugas !== '-') localStorage.setItem('rk_nama_petugas', namaPetugas); } catch (e) { /* abaikan */ }
+            if (!Admin.canStatus() && !Admin.need('mengubah status titik panas')) return;
+            const key = box.dataset.key, status = box.querySelector('.rk-st-sel').value, catatan = box.querySelector('.rk-st-note').value.trim();
             btn.disabled = true; const old = btn.textContent; btn.textContent = 'Menyimpan...';
             try {
-                const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'setStatusTitik', hotspotKey: key, status, catatan, pelapor: namaPetugas }), timeout: 60000 });
+                const r = await apiFetch_(GAS_API_URL, { method: 'POST', body: JSON.stringify({ action: 'setStatusTitik', hotspotKey: key, status, catatan, pelapor: 'Admin' }), timeout: 60000 });
                 globalStatus[key] = r.item;
                 Notify.success('Status titik: ' + status + '.', 'Status tersimpan');
                 map.closePopup();
@@ -1556,6 +1823,7 @@
             el.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px';
             el.innerHTML = '<span class="text-xs font-bold" style="color:var(--mut)">VERIFIKASI LAPANGAN 24 JAM (' + v.total + ' titik)</span>' + chip(v.belum, 'belum dicek', 'Belum dicek') + chip(v.ditangani, 'ditangani', 'Sedang ditangani') + chip(v.padam, 'api padam', 'Api padam') + chip(v.bukanApi, 'bukan api', 'Bukan api');
         }
+
         // ================= KEAMANAN SISI KLIEN =================
         // URL dari server hanya boleh https (foto Drive/Google); selain itu dibuang.
         function safeUrl_(u) {
@@ -1597,7 +1865,7 @@
             const an = globalAnalisis;
             if (!an || !Array.isArray(an.kelurahan)) {
                 meta.textContent = 'Analisis belum tersedia dari server.';
-                body.innerHTML = ixEmpty_('Versi server terdeteksi: ' + (serverVersion_ || 'LAMA (belum ada nomor versi)') + '. Dibutuhkan 6.2.0 atau lebih baru. ' + (serverVersion_ ? 'Server sudah baru tetapi analisis kosong: jalankan ujiAnalisis di editor Apps Script dan cek sheet Log_Sistem.' : 'Deploy ulang CODE.gs (Terapkan > Kelola deployment > pensil > Versi baru) pada deployment yang URL-nya sama dengan GAS_API_URL di index.html.'));
+                body.innerHTML = ixEmpty_('Versi server terdeteksi: ' + (serverVersion_ || 'LAMA (belum ada nomor versi)') + '. Dibutuhkan 6.3.0 atau lebih baru. ' + (serverVersion_ ? 'Server sudah baru tetapi analisis kosong: jalankan ujiAnalisis di editor Apps Script dan cek sheet Log_Sistem.' : 'Deploy ulang CODE.gs (Terapkan > Kelola deployment > pensil > Versi baru) pada deployment yang URL-nya sama dengan GAS_API_URL di index.html.'));
                 rec.innerHTML = ''; return;
             }
             meta.textContent = 'Dihitung ' + fmtWib_(an.dibuat) + ' dari titik panas 24 jam & 7 hari, FRP, prakiraan cuaca, ISPU, dan laporan lapangan.';
@@ -1959,357 +2227,295 @@
         };
         legend.addTo(map);
 
-        // ================= LAPISAN SIAP PAKAI: JALAN & SUNGAI (OpenStreetMap) + LAHAN GAMBUT (KLHK) =================
-        // Tidak ada langkah unduh manual. Cukup centang layer di kontrol lapisan peta.
-        //  - Jalan & sungai/kanal: diambil otomatis dari OpenStreetMap saat pertama dipakai, lalu disimpan di perangkat (IndexedDB, 30 hari).
-        //  - Lahan gambut: ditampilkan langsung dari layanan peta resmi KLHK (SiPPEG, Fungsi Ekosistem Gambut 1:50.000).
-
-        /** Penyimpanan lokal (IndexedDB) agar data lapisan tidak diunduh ulang. Bila IndexedDB tidak tersedia, memakai memori. */
-        const GeoCache = (function () {
-            const DB = 'rk-geo', ST = 'layers'; let dbp = null; const mem = {};
-            function open() {
-                if (dbp) return dbp;
-                dbp = new Promise((res) => {
-                    try {
-                        const rq = indexedDB.open(DB, 1);
-                        rq.onupgradeneeded = () => { try { rq.result.createObjectStore(ST); } catch (e) { /* abaikan */ } };
-                        rq.onsuccess = () => res(rq.result);
-                        rq.onerror = () => res(null);
-                        rq.onblocked = () => res(null);
-                    } catch (e) { res(null); }
-                });
-                return dbp;
-            }
-            async function get(key) {
-                const db = await open(); if (!db) return mem[key] || null;
-                return new Promise((res) => {
-                    try { const r = db.transaction(ST, 'readonly').objectStore(ST).get(key); r.onsuccess = () => res(r.result || null); r.onerror = () => res(mem[key] || null); }
-                    catch (e) { res(mem[key] || null); }
-                });
-            }
-            async function set(key, val) {
-                mem[key] = val;
-                const db = await open(); if (!db) return false;
-                return new Promise((res) => {
-                    try { const tx = db.transaction(ST, 'readwrite'); tx.objectStore(ST).put(val, key); tx.oncomplete = () => res(true); tx.onerror = () => res(false); tx.onabort = () => res(false); }
-                    catch (e) { res(false); }
-                });
-            }
-            return { get, set };
-        })();
-
-        const Osm = (function () {
+        // ================= v6.3: LAPISAN GAMBUT (BIG), JALAN & SUNGAI (OSM) + KONTEKS LOKASI =================
+        // Semua lapisan diambil LANGSUNG dari layanan sumbernya oleh browser (tanpa Apps Script/Drive/Sheet) sehingga langsung tersedia.
+        const Ktx = (function () {
+            let BIG = 'https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/SUMBER_DAYA_ALAM_DAN_LINGKUNGAN/MapServer', L_PEAT = 48, L_PEAT_ALT = 6;
+            const OVP = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+            const HW = '^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|unclassified|residential|service|living_street|road|track|path)$';
+            const WW = '^(river|stream|canal|drain|ditch)$';
             const STYLE = [
-                { name: 'Jalan utama', color: '#ea580c', weight: 3.2, group: 'jalan' },
-                { name: 'Jalan', color: '#a16207', weight: 2, group: 'jalan' },
-                { name: 'Jalan setapak/lahan', color: '#78716c', weight: 1.4, dash: '4 4', group: 'jalan' },
-                { name: 'Sungai', color: '#0284c7', weight: 3, group: 'air' },
-                { name: 'Kanal/parit', color: '#38bdf8', weight: 1.6, group: 'air' }
+                { color: '#ea580c', weight: 3.2, group: 'jalan' }, { color: '#a16207', weight: 2, group: 'jalan' },
+                { color: '#78716c', weight: 1.4, dash: '4 4', group: 'jalan' }, { color: '#0284c7', weight: 3, group: 'air' }, { color: '#38bdf8', weight: 1.6, group: 'air' }
             ];
-            const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
-            const KEY = 'osm-rakumpit-v1', TTL = 30 * 86400000, MARGIN = 0.02, TOL = [0.00012, 0.00025, 0.0005], MAX_POINTS = 160000, TILES = 2;
-            let meta = null, data = null, loading = null, built = false, bgRefresh = false, prefetched = false;
+            const R = 20037508.342789244;
+            const fmtD = (m) => m < 1000 ? (Math.round(m / 10) * 10) + ' m' : (Math.round(m / 100) / 10).toString().replace('.', ',') + ' km';
+            const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+            async function getJson(url, ms, opt) {
+                const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), ms || 15000);
+                try {
+                    const res = await fetch(url, Object.assign({ cache: 'default', signal: ctrl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' }, opt || {}));
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return await res.json();
+                } finally { clearTimeout(t); }
+            }
+            function lower(a) { const o = {}; for (const k in (a || {})) o[k.toLowerCase()] = a[k]; return o; }
+            const clean = (v) => { v = String(v == null ? '' : v).replace(/[\u0000-\u001f]+/g, ' ').trim(); return /^(null|none|-|0)?$/i.test(v) ? '' : v.slice(0, 80); };
+            function peatInfo(a, alt) {
+                a = lower(a);
+                if (alt) { const lf = clean(a.landform || a.namobj); return { ada: true, tebal: '', fungsi: '', tanah: lf, ket: 'Lahan gambut' + (lf ? ' (' + lf + ')' : ''), sumber: 'BIG 1:250.000' }; }
+                const tebal = clean(a.peat_thick), fungsi = clean(a.feg_50k || a.feg_peat), tanah = clean(a.tnh_gambut), khg = clean(a.kode_khg);
+                return { ada: true, tebal, fungsi, tanah, khg, ket: 'Gambut' + (tebal ? ', ketebalan ' + tebal : '') + (fungsi ? ', ' + fungsi : ''), sumber: 'BIG 1:50.000' };
+            }
+            /* ---------- ubin gambar ArcGIS (selalu bisa: tag <img> tidak butuh CORS) ---------- */
+            const BigTile = L.TileLayer.extend({
+                initialize: function (layerId, options) { this._lid = layerId; L.TileLayer.prototype.initialize.call(this, '', options); },
+                getTileUrl: function (c) {
+                    const n = Math.pow(2, c.z), size = 2 * R / n, minx = -R + c.x * size, maxy = R - c.y * size;
+                    return BIG + '/export?bbox=' + [minx, maxy - size, minx + size, maxy].join(',') + '&bboxSR=3857&imageSR=3857&size=256%2C256&dpi=96&format=png32&transparent=true&layers=show%3A' + this._lid + '&f=image';
+                }
+            });
+            /* ---------- chip status lapisan ---------- */
+            const chipCtl = L.control({ position: 'bottomright' });
+            let chipEl = null;
+            chipCtl.onAdd = function () { chipEl = L.DomUtil.create('div', 'rk-chip'); L.DomEvent.disableClickPropagation(chipEl); return chipEl; };
+            chipCtl.addTo(map);
+            const chipMsgs = {};
+            function chip(key, text, tone) {
+                if (text) chipMsgs[key] = { text, tone: tone || 'info' }; else delete chipMsgs[key];
+                const ks = Object.keys(chipMsgs);
+                if (!chipEl) return;
+                chipEl.style.display = ks.length ? 'block' : 'none';
+                chipEl.innerHTML = ks.map(k => '<div class="rk-chip-' + chipMsgs[k].tone + '">' + esc(chipMsgs[k].text) + '</div>').join('');
+            }
+            chip('x', '');
+            /* ---------- GAMBUT ---------- */
+            const peatTiles = new BigTile(L_PEAT, { opacity: 0.6, zIndex: 4, maxZoom: 19, attribution: 'Gambut &copy; Badan Informasi Geospasial (Satu Peta)' });
+            const peatVecCanvas = L.canvas({ padding: 0.3 });
+            const peatVec = L.layerGroup();
+            const peatGroup = L.layerGroup([peatTiles, peatVec]);
+            const peatAlt = new BigTile(L_PEAT_ALT, { opacity: 0.6, zIndex: 4, maxZoom: 19, attribution: 'Lahan gambut &copy; BIG (Satu Peta)' });
+            const khgTiles = new BigTile(37, { opacity: 0.55, zIndex: 4, maxZoom: 19, attribution: 'KHG &copy; BIG (Satu Peta)' });
+            const rawanTiles = new BigTile(47, { opacity: 0.55, zIndex: 4, maxZoom: 19, attribution: 'Rawan karhutla &copy; BIG (Satu Peta)' });
+            let tOk = 0, tErr = 0, tilesDead = false, directFails = 0, vecKey = '', vecAbort = null, vecTimer = null;
+            peatTiles.on('tileload', () => { tOk++; if (tOk === 1 && !Object.keys(chipMsgs).some(k => k === 'pv')) chip('peat', 'Lapisan gambut tampil (BIG)', 'ok'); });
+            peatTiles.on('tileerror', () => { tErr++; if (!tOk && tErr >= 4 && !tilesDead) { tilesDead = true; chip('peat', 'Gambar peta BIG tidak termuat, memakai data vektor...', 'warn'); styleVec(); loadVec(true); } });
+            function peatColor(a) { const f = String(lower(a).feg_50k || lower(a).feg_peat || '').toLowerCase(); return /lindung/.test(f) ? '#7c2d12' : (/budidaya/.test(f) ? '#d97706' : '#92400e'); }
+            function styleVec() {
+                peatVec.eachLayer(l => { const c = peatColor(l._a); l.setStyle({ fillOpacity: tilesDead ? 0.5 : 0.4, fillColor: c, color: c, weight: 1, opacity: 0.9 }); });
+            }
+            function peatPopup(a) {
+                const p = peatInfo(a);
+                const rows = [['Ketebalan gambut', p.tebal], ['Jenis tanah gambut', p.tanah], ['Fungsi ekosistem', p.fungsi], ['Kode KHG', p.khg]].filter(r => r[1]);
+                return '<div style="font:12px/1.5 system-ui,sans-serif;min-width:190px"><b style="color:#7c2d12">Lahan gambut</b>' + (rows.length ? '<table style="margin-top:4px;border-collapse:collapse">' + rows.map(r => '<tr><td style="color:#64748b;padding:1px 8px 1px 0">' + r[0] + '</td><td><b>' + esc(r[1]) + '</b></td></tr>').join('') + '</table>' : '<div style="color:#64748b">Rincian atribut tidak tersedia.</div>') +
+                    '<div style="color:#94a3b8;font-size:10px;margin-top:4px">Sumber: BIG Satu Peta (Fungsi Ekosistem Gambut 1:50.000)</div></div>';
+            }
+            function drawVec(feats) {
+                peatVec.clearLayers();
+                feats.forEach(f => {
+                    const rings = (f.r || []).map(r => r.map(p => [p[1], p[0]]));
+                    if (!rings.length) return;
+                    const c = peatColor(f.a), pl = L.polygon(rings, { renderer: peatVecCanvas, smoothFactor: 1.5, interactive: true });
+                    pl._a = f.a; pl.bindPopup(() => peatPopup(f.a), { maxWidth: 260 });
+                    peatVec.addLayer(pl);
+                });
+                styleVec();
+            }
+            async function peatDirect(bb, z) {
+                const off = (1.5 * 360 / (256 * Math.pow(2, z))).toFixed(6);
+                const url = BIG + '/' + L_PEAT + '/query?f=json&returnGeometry=true&outSR=4326&inSR=4326&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=*&geometryPrecision=5&resultRecordCount=600&maxAllowableOffset=' + off + '&geometry=' + encodeURIComponent(bb.join(','));
+                const j = await getJson(url, 20000);
+                if (j.error) throw new Error(j.error.message || 'galat BIG');
+                return { f: (j.features || []).map(x => ({ a: lower(x.attributes), r: (x.geometry && x.geometry.rings) || [] })).filter(x => x.r.length), trunc: !!j.exceededTransferLimit };
+            }
+            async function peatGas(bb) {
+                const j = await apiFetch_(GAS_API_URL + '?action=gambutgeo&w=' + bb[0] + '&s=' + bb[1] + '&e=' + bb[2] + '&n=' + bb[3], { timeout: 40000, retries: 0 });
+                return { f: j.f || [], trunc: !!j.trunc };
+            }
+            async function loadVec(force) {
+                if (!map.hasLayer(peatGroup)) return;
+                const z = map.getZoom();
+                if (z < 11 && !tilesDead) { peatVec.clearLayers(); vecKey = ''; peatTiles.setOpacity(0.6); return; }
+                const b = map.getBounds().pad(0.15), bb = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].map(v => +v.toFixed(4));
+                if (bb[2] - bb[0] > 0.6 || bb[3] - bb[1] > 0.6) { chip('pv', 'Perbesar peta untuk melihat poligon gambut', 'info'); return; }
+                const key = bb.join(',');
+                if (!force && key === vecKey) return;
+                if (vecAbort) vecAbort.aborted = true;
+                const tok = vecAbort = { aborted: false };
+                chip('pv', 'Memuat poligon gambut...', 'info');
+                let res = null, err = null;
+                if (directFails < 3) { try { res = await peatDirect(bb, z); directFails = 0; } catch (e) { directFails++; err = e; } }
+                if (!res) { try { res = await peatGas(bb); } catch (e2) { err = e2; } }
+                if (tok.aborted) return;
+                if (!res) {
+                    chip('pv', '', ''); chip('peat', 'Data gambut BIG belum dapat dimuat' + (tilesDead ? '' : ' (hanya gambar)') + '. Coba lagi nanti.', 'err');
+                    if (tilesDead) Notify.error('Layanan BIG Satu Peta tidak merespons dari jaringan ini maupun dari server. Coba lagi beberapa menit lagi.', 'Gambut belum tampil', { timeout: 9000 });
+                    return;
+                }
+                vecKey = key; drawVec(res.f); peatTiles.setOpacity(res.f.length ? 0.25 : 0.6);
+                chip('pv', '', '');
+                chip('peat', res.f.length ? 'Gambut: ' + res.f.length + ' poligon' + (res.trunc ? ' (sebagian, perbesar)' : '') + (tilesDead ? ' · mode vektor' : ' · ketuk area untuk detail') : 'Tidak ada gambut di tampilan ini', res.f.length ? 'ok' : 'info');
+            }
+            function schedVec() { clearTimeout(vecTimer); vecTimer = setTimeout(() => loadVec(false), 450); }
+            /* ---------- JALAN & SUNGAI OSM (area tampilan) ---------- */
             const canvas = L.canvas({ padding: 0.3 });
             const groups = { jalan: L.layerGroup(), air: L.layerGroup() };
-
-            /* ---------- kotak batas wilayah dari GEOJSON kelurahan ---------- */
-            function bbox() {
-                let s = 90, w = 180, n = -90, e = -180;
-                const walk = (c) => {
-                    if (typeof c[0] === 'number') { const lo = c[0], la = c[1]; if (la < s) s = la; if (la > n) n = la; if (lo < w) w = lo; if (lo > e) e = lo; }
-                    else c.forEach(walk);
-                };
-                GEOJSON.features.forEach(f => walk(f.geometry.coordinates));
-                return { s: s - MARGIN, w: w - MARGIN, n: n + MARGIN, e: e + MARGIN };
-            }
-
-            /* ---------- pengambilan dari Overpass (OpenStreetMap) ---------- */
-            function kelasOf(t) {
-                const h = t.highway, w = t.waterway;
-                if (h) {
-                    if (/^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$/.test(h)) return 0;
-                    if (/^(unclassified|residential|service|living_street|road)$/.test(h)) return 1;
-                    if (/^(track|path)$/.test(h)) return 2;
-                    return -1;
-                }
-                if (w) { if (/^(river|stream)$/.test(w)) return 3; if (/^(canal|drain|ditch)$/.test(w)) return 4; }
+            const drawn = new Set(), covered = [];
+            let osmBusy = false, osmTimer = null, osmDown = 0;
+            const roadTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { opacity: 0.9, zIndex: 5, maxZoom: 19, maxNativeZoom: 17, attribution: 'Jalan &copy; Esri' });
+            function kelas(t) {
+                if (t.highway) { if (/^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$/.test(t.highway)) return 0; if (/^(unclassified|residential|service|living_street|road)$/.test(t.highway)) return 1; if (/^(track|path)$/.test(t.highway)) return 2; return -1; }
+                if (t.waterway) { if (/^(river|stream)$/.test(t.waterway)) return 3; if (/^(canal|drain|ditch)$/.test(t.waterway)) return 4; }
                 return -1;
             }
-            function simplify(pts, tol) {
-                const n = pts.length; if (n <= 2) return pts.slice();
-                const keep = new Array(n).fill(false), stack = [[0, n - 1]], t2 = tol * tol; keep[0] = keep[n - 1] = true;
-                while (stack.length) {
-                    const [a, b] = stack.pop(); if (b <= a + 1) continue;
-                    const ax = pts[a][1], ay = pts[a][0], dx = pts[b][1] - ax, dy = pts[b][0] - ay, l2 = dx * dx + dy * dy; let maxD = -1, idx = -1;
-                    for (let i = a + 1; i < b; i++) {
-                        const px = pts[i][1] - ax, py = pts[i][0] - ay; let d2;
-                        if (l2 === 0) d2 = px * px + py * py;
-                        else { const t = Math.max(0, Math.min(1, (px * dx + py * dy) / l2)), cx = t * dx - px, cy = t * dy - py; d2 = cx * cx + cy * cy; }
-                        if (d2 > maxD) { maxD = d2; idx = i; }
-                    }
-                    if (maxD > t2) { keep[idx] = true; stack.push([a, idx], [idx, b]); }
+            async function overpass(q, ms) {
+                let last = null;
+                for (const h of OVP) {
+                    try { const j = await getJson(h + '?data=' + encodeURIComponent(q), ms || 30000); if (j && j.elements) return j.elements; last = new Error('respons tanpa elemen'); } catch (e) { last = e; }
                 }
-                return pts.filter((_, i) => keep[i]);
+                throw last || new Error('Overpass tidak tersedia');
             }
-            function encode(elements, tol) {
-                const lines = [], seen = {}; let total = 0;
-                elements.forEach(el => {
-                    if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) return;
-                    if (el.id !== undefined) { if (seen[el.id]) return; seen[el.id] = 1; }
-                    const k = kelasOf(el.tags || {}); if (k < 0) return;
-                    let pts = el.geometry.filter(g => g && typeof g.lat === 'number' && typeof g.lon === 'number').map(g => [g.lat, g.lon]);
-                    if (pts.length < 2) return;
-                    pts = simplify(pts, tol);
-                    const line = [k]; let pl = 0, pg = 0;
-                    pts.forEach((p, i) => { const la = Math.round(p[0] * 1e5), lo = Math.round(p[1] * 1e5); if (i === 0) line.push(la, lo); else line.push(la - pl, lo - pg); pl = la; pg = lo; });
-                    total += pts.length; lines.push(line);
-                });
-                return { lines, points: total };
+            const osmActive = () => map.hasLayer(groups.jalan) || map.hasLayer(groups.air);
+            async function loadOsm() {
+                if (!osmActive() || osmBusy) return;
+                if (map.getZoom() < 12) { chip('osm', 'Perbesar peta (zoom 12+) untuk memuat jalan & sungai OSM', 'info'); return; }
+                let b = map.getBounds().pad(0.1);
+                const sn = (v, up) => (up ? Math.ceil : Math.floor)(v * 50) / 50;
+                let s = sn(b.getSouth(), false), w = sn(b.getWest(), false), n = sn(b.getNorth(), true), e = sn(b.getEast(), true);
+                if (n - s > 0.2 || e - w > 0.2) { const c = map.getCenter(); s = sn(c.lat - 0.09, false); n = s + 0.2; w = sn(c.lng - 0.09, false); e = w + 0.2; }
+                if (covered.some(c => c[0] <= s && c[1] <= w && c[2] >= n && c[3] >= e)) { chip('osm', '', ''); return; }
+                osmBusy = true; chip('osm', 'Memuat jalan & sungai (OSM)...', 'info');
+                try {
+                    const bb = '(' + s + ',' + w + ',' + n + ',' + e + ')';
+                    const els = await overpass('[out:json][timeout:25];(way["highway"~"' + HW + '"]' + bb + ';way["waterway"~"' + WW + '"]' + bb + ';);out geom qt;', 35000);
+                    if (drawn.size > 9000) { groups.jalan.clearLayers(); groups.air.clearLayers(); drawn.clear(); covered.length = 0; }
+                    let add = 0;
+                    els.forEach(el => {
+                        if (el.type !== 'way' || !el.geometry || el.geometry.length < 2 || drawn.has(el.id)) return;
+                        const k = kelas(el.tags || {}); if (k < 0) return;
+                        drawn.add(el.id); add++;
+                        const st = STYLE[k];
+                        groups[st.group].addLayer(L.polyline(el.geometry.map(g => [g.lat, g.lon]), { renderer: canvas, color: st.color, weight: st.weight, opacity: 0.85, dashArray: st.dash || null, interactive: false, smoothFactor: 1.5 }));
+                    });
+                    covered.push([s, w, n, e]); osmDown = 0;
+                    chip('osm', add || drawn.size ? '' : 'Tidak ada data jalan/sungai OSM di area ini', 'info');
+                } catch (err) { osmDown++; chip('osm', 'Data jalan & sungai OSM belum dapat dimuat (layanan Overpass sibuk). Coba geser peta sebentar lagi.', 'warn'); }
+                finally { osmBusy = false; }
             }
-            function query(s, w, n, e) {
-                const bb = '(' + [s, w, n, e].map(v => v.toFixed(4)).join(',') + ')';
-                return '[out:json][timeout:55];(' +
-                    'way["highway"~"^(motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link|unclassified|residential|service|living_street|road|track|path)$"]' + bb + ';' +
-                    'way["waterway"~"^(river|stream|canal|drain|ditch)$"]' + bb + ';);out geom qt;';
-            }
-            async function overpassTile(q) {
-                for (let round = 0; round < 2; round++) {
-                    for (const url of OVERPASS) {
-                        const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 75000);
-                        try {
-                            const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrl.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
-                            clearTimeout(t);
-                            if (res.ok) { const j = await res.json(); if (j && Array.isArray(j.elements)) return j.elements; }
-                        } catch (e) { clearTimeout(t); /* coba server berikutnya */ }
-                    }
-                    await new Promise(r => setTimeout(r, 3000));
-                }
-                throw apiErr_('OSM_FAIL', 'Server OpenStreetMap (Overpass) sedang sibuk atau tidak terjangkau. Coba lagi beberapa saat.', false);
-            }
-            async function fromOverpass(progress) {
-                const b = bbox(); let els = [];
-                for (let i = 0; i < TILES; i++) for (let j = 0; j < TILES; j++) {
-                    if (progress) progress(i * TILES + j + 1, TILES * TILES);
-                    const s = b.s + (b.n - b.s) * i / TILES, n = b.s + (b.n - b.s) * (i + 1) / TILES, w = b.w + (b.e - b.w) * j / TILES, e = b.w + (b.e - b.w) * (j + 1) / TILES;
-                    els = els.concat(await overpassTile(query(s, w, n, e)));
-                }
-                let enc = null;
-                for (const tol of TOL) { enc = encode(els, tol); if (enc.points <= MAX_POINTS) break; }
-                if (!enc || !enc.lines.length) throw apiErr_('OSM_EMPTY', 'OpenStreetMap tidak mengembalikan data jalan/sungai untuk wilayah ini.', false);
-                return { v: 1, updated: new Date().toISOString(), bbox: [b.s, b.w, b.n, b.e], lines: enc.lines };
-            }
-
-            /* ---------- dekode & gambar ---------- */
-            function decode(j) {
-                const out = [];
-                (j.lines || []).forEach(l => {
-                    const la = [], lo = []; let a = 0, g = 0;
-                    for (let i = 1; i + 1 < l.length; i += 2) { if (i === 1) { a = l[1]; g = l[2]; } else { a += l[i]; g += l[i + 1]; } la.push(a / 1e5); lo.push(g / 1e5); }
-                    if (la.length < 2) return;
-                    out.push({ k: l[0], la, lo, minLa: Math.min(...la), maxLa: Math.max(...la), minLo: Math.min(...lo), maxLo: Math.max(...lo) });
-                });
-                return { lines: out, updated: j.updated || '' };
-            }
-            function build() {
-                if (built || !data) return; built = true;
-                data.lines.forEach(ln => {
-                    const s = STYLE[ln.k] || STYLE[1];
-                    const pl = L.polyline(ln.la.map((x, i) => [x, ln.lo[i]]), { renderer: canvas, color: s.color, weight: s.weight, opacity: 0.85, dashArray: s.dash || null, interactive: false });
-                    groups[s.group].addLayer(pl);
-                });
-            }
-
-            /* ---------- sumber data: cache perangkat -> salinan server -> OpenStreetMap langsung ---------- */
-            async function fresh(silent) {
-                let j = null;
-                if (!meta || meta.ada !== false) {
-                    try { const r = await apiFetch_(GAS_API_URL + '?action=lapisan&_=' + Math.floor(Date.now() / 3600000), { timeout: 90000, retries: 1 }); if (r && r.lines && r.lines.length) j = r; }
-                    catch (e) { /* salinan server tidak ada: ambil langsung dari OpenStreetMap */ }
-                }
-                if (!j) j = await fromOverpass((i, t) => { const el = document.getElementById('rk-load-text'); if (el && !silent) el.textContent = 'Mengambil jalan & sungai dari OpenStreetMap (' + i + '/' + t + '). Hanya sekali, lalu tersimpan di perangkat...'; });
-                j.saved = Date.now();
-                GeoCache.set(KEY, j);
-                return j;
-            }
-            function refreshLater() {
-                if (bgRefresh) return; bgRefresh = true;
-                setTimeout(() => { fresh(true).catch(() => { /* tetap pakai salinan lama */ }); }, 20000);
-            }
-            function load(silent) {
-                if (data) return Promise.resolve(data);
-                if (loading) {
-                    if (!silent) { Loader.show('Memuat lapisan jalan & sungai...'); loading.then(() => Loader.hide(), () => Loader.hide()); }
-                    return loading;
-                }
-                loading = (async () => {
-                    if (!silent) Loader.show('Memuat lapisan jalan & sungai...');
-                    try {
-                        let j = null; const c = await GeoCache.get(KEY);
-                        if (c && c.lines && c.lines.length) { j = c; if (Date.now() - (c.saved || 0) > TTL) refreshLater(); }
-                        if (!j) j = await fresh(silent);
-                        data = decode(j); build(); return data;
-                    } finally { if (!silent) Loader.hide(); loading = null; }
-                })();
-                return loading;
-            }
-            /** Muat diam-diam bila sudah ada di perangkat / di server, agar jarak di popup langsung tampil. */
-            function prefetch() {
-                if (data || loading || prefetched) return; prefetched = true;
-                if (navigator.connection && navigator.connection.saveData) return;
-                GeoCache.get(KEY).then(c => { if ((c && c.lines) || (meta && meta.ada)) setTimeout(() => { load(true).catch(() => { /* abaikan */ }); }, 2500); }).catch(() => { /* abaikan */ });
-            }
-
-            /* ---------- jarak ke jalan & sungai terdekat ---------- */
-            function dist(lat, lng, aLa, aLo, bLa, bLo) {
+            function schedOsm() { clearTimeout(osmTimer); osmTimer = setTimeout(loadOsm, 600); }
+            /* ---------- KONTEKS SATU TITIK (popup & "Cek lokasi") ---------- */
+            const memo = new Map();
+            function distM(lat, lng, aLa, aLo, bLa, bLo) {
                 const kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
                 const ax = (aLo - lng) * kx, ay = (aLa - lat) * ky, bx = (bLo - lng) * kx, by = (bLa - lat) * ky, dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
                 let t = l2 ? (-ax * dx - ay * dy) / l2 : 0; t = Math.max(0, Math.min(1, t));
                 return Math.hypot(ax + t * dx, ay + t * dy);
             }
-            function nearest(lat, lng) {
+            async function peatAt(lat, lng) {
+                const pt = encodeURIComponent(lng.toFixed(6) + ',' + lat.toFixed(6));
+                const q = (layer) => getJson(BIG + '/' + layer + '/query?f=json&returnGeometry=false&outFields=*&inSR=4326&spatialRel=esriSpatialRelIntersects&geometryType=esriGeometryPoint&geometry=' + pt, 15000).then(j => { if (j.error || !j.features) throw new Error('BIG'); return j.features; });
+                let f = await q(L_PEAT);
+                if (f.length) return peatInfo(f[0].attributes);
+                f = await q(L_PEAT_ALT).catch(() => []);
+                return f.length ? peatInfo(f[0].attributes, true) : { ada: false };
+            }
+            async function aksesAt(lat, lng) {
+                const ar = '(around:3000,' + lat.toFixed(5) + ',' + lng.toFixed(5) + ')';
+                const els = await overpass('[out:json][timeout:20];(way' + ar + '["highway"~"' + HW + '"];way' + ar + '["waterway"~"' + WW + '"];);out geom qt;', 25000);
                 const best = { jalan: null, air: null };
-                if (!data) return best;
-                const kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
-                data.lines.forEach(ln => {
-                    const grp = ln.k <= 2 ? 'jalan' : 'air'; let cur = best[grp] ? best[grp].m : 1e9;
-                    const dLa = lat < ln.minLa ? ln.minLa - lat : (lat > ln.maxLa ? lat - ln.maxLa : 0), dLo = lng < ln.minLo ? ln.minLo - lng : (lng > ln.maxLo ? lng - ln.maxLo : 0);
-                    if (Math.hypot(dLa * ky, dLo * kx) > cur) return;
-                    for (let i = 0; i + 1 < ln.la.length; i++) { const d = dist(lat, lng, ln.la[i], ln.lo[i], ln.la[i + 1], ln.lo[i + 1]); if (d < cur) { cur = d; best[grp] = { m: d, k: ln.k }; } }
+                els.forEach(el => {
+                    if (!el.geometry || el.geometry.length < 2) return;
+                    const k = kelas(el.tags || {}); if (k < 0) return;
+                    const g = k <= 2 ? 'jalan' : 'air'; let cur = best[g] ? best[g].m : 1e9;
+                    for (let i = 0; i + 1 < el.geometry.length; i++) { const d = distM(lat, lng, el.geometry[i].lat, el.geometry[i].lon, el.geometry[i + 1].lat, el.geometry[i + 1].lon); if (d < cur) { cur = d; best[g] = { m: d, k }; } }
                 });
                 return best;
             }
-            const fmtD = (m) => m < 1000 ? (Math.round(m / 10) * 10) + ' m' : (Math.round(m / 100) / 10).toString().replace('.', ',') + ' km';
+            async function viaGas(lat, lng) { return apiFetch_(GAS_API_URL + '?action=konteks&lat=' + lat.toFixed(5) + '&lng=' + lng.toFixed(5), { timeout: 45000, retries: 0 }); }
+            function lookup(lat, lng) {
+                const key = lat.toFixed(4) + '_' + lng.toFixed(4);
+                if (memo.has(key)) return memo.get(key);
+                let gasP = null; const gas = () => gasP || (gasP = viaGas(lat, lng));
+                const p = Promise.all([
+                    peatAt(lat, lng).catch(() => gas().then(r => r.gambut || null).catch(() => null)),
+                    aksesAt(lat, lng).catch(() => gas().then(r => r.akses || null).catch(() => null))
+                ]).then(([gambut, akses]) => ({ gambut, akses }));
+                memo.set(key, p);
+                p.then(r => { if (!r.gambut && !r.akses) memo.delete(key); });
+                if (memo.size > 150) memo.delete(memo.keys().next().value);
+                return p;
+            }
             function nearestWater(lat, lng) {
                 let b = null;
-                (typeof globalWaterSources !== 'undefined' ? globalWaterSources : []).forEach(w => {
-                    const d = dist(lat, lng, w.lat, w.lng, w.lat, w.lng);
-                    if (!b || d < b.m) b = { m: d, w };
-                });
+                (typeof globalWaterSources !== 'undefined' ? globalWaterSources : []).forEach(w => { const d = distM(lat, lng, w.lat, w.lng, w.lat, w.lng); if (!b || d < b.m) b = { m: d, w }; });
                 return b;
             }
-            /** HTML isi blok akses di popup */
-            function accessHtml(lat, lng) {
-                const n = nearest(lat, lng), p = [];
-                if (n.jalan) p.push('<b>' + (n.jalan.k === 2 ? 'Jalan setapak' : 'Jalan') + '</b> ' + fmtD(n.jalan.m));
-                if (n.air) p.push('<b>' + (n.air.k === 3 ? 'Sungai' : 'Kanal/parit') + '</b> ' + fmtD(n.air.m));
-                let h = p.length ? 'Terdekat (OpenStreetMap): ' + p.join(' &middot; ') : 'Data jalan/sungai belum tersedia.';
+            function ctxHtml(r, lat, lng) {
+                let h = '';
+                if (r.gambut) {
+                    h += r.gambut.ada ? '<div><span class="rk-peat">Gambut</span> ' + esc(r.gambut.ket.replace(/^(Lahan )?[Gg]ambut,? ?/, '') || 'ketebalan belum tercatat') + '</div>' : '<div><b>Bukan lahan gambut</b> <span style="color:#94a3b8">(BIG)</span></div>';
+                } else h += '<div style="color:#94a3b8">Data gambut belum tersedia.</div>';
+                const a = r.akses, p = [];
+                if (a) {
+                    if (a.jalan) p.push('<b>' + (a.jalan.k === 2 ? 'Jalan setapak' : 'Jalan') + '</b> ' + fmtD(a.jalan.m));
+                    if (a.air) p.push('<b>' + (a.air.k === 3 ? 'Sungai' : 'Kanal/parit') + '</b> ' + fmtD(a.air.m));
+                    h += '<div>' + (p.length ? 'Terdekat (OSM): ' + p.join(' &middot; ') : 'Tidak ada jalan/sungai OSM dalam 3 km') + '</div>';
+                } else h += '<div style="color:#94a3b8">Data jalan/sungai belum tersedia.</div>';
                 const w = nearestWater(lat, lng);
-                if (w) h += '<br>Sumber air tercatat: ' + esc(w.w.jenis) + ' ' + esc(w.w.nama) + ' (' + fmtD(w.m) + ')';
+                if (w) h += '<div>Sumber air tercatat: ' + esc(w.w.jenis) + ' ' + esc(w.w.nama) + ' (' + fmtD(w.m) + ')</div>';
                 return h;
             }
-            function setMeta(m) { meta = m || null; prefetch(); }
-            return { groups, load, accessHtml, setMeta, meta: () => meta, ready: () => !!data };
-        })();
-
-        const Peat = (function () {
-            // Layanan peta resmi KLHK (Direktorat Pengendalian Kerusakan Ekosistem Gambut), SiPPEG
-            const BASE = 'https://sippeg.menlhk.go.id/arcgis/rest/services/FEG_50K_Nasional_Agustus_2022/MapServer';
-            const FIELDS = 'NAMA_KHG,KODE_KHG,PEAT_THICK,FEG_50K,FEG_PEAT,Min_Thick,Luas_Ha';
-            const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            const ATTR = 'Peta gambut &copy; KLHK (SiPPEG), Fungsi Ekosistem Gambut 1:50.000';
-            const cache = {};
-            const Layer = L.TileLayer.extend({
-                getTileUrl: function (c) {
-                    const b = this._tileCoordsToBounds(c), sw = L.CRS.EPSG3857.project(b.getSouthWest()), ne = L.CRS.EPSG3857.project(b.getNorthEast());
-                    return BASE + '/export?bbox=' + [sw.x, sw.y, ne.x, ne.y].map(v => v.toFixed(2)).join(',') + '&bboxSR=3857&imageSR=3857&size=256,256&dpi=96&format=png32&transparent=true&layers=show:0&f=image';
-                }
-            });
-            const layer = new Layer('', { tileSize: 256, maxZoom: 18, opacity: 0.7, zIndex: 4, attribution: ATTR, errorTileUrl: BLANK });
-            let ok = 0, bad = 0, warned = false, marker = null;
-            layer.on('tileload', () => { ok++; });
-            layer.on('tileerror', () => { bad++; if (!warned && bad >= 6 && ok === 0) { warned = true; Notify.warn('Layanan peta gambut KLHK (SiPPEG) tidak merespons. Coba lagi beberapa saat.', 'Layer gambut', { timeout: 8000 }); } });
-
-            /** Cek gambut di satu titik (query ke layanan KLHK). Hasil disimpan per titik. */
-            function lookup(lat, lng) {
-                const k = lat.toFixed(4) + ',' + lng.toFixed(4);
-                if (cache[k]) return cache[k];
-                const url = BASE + '/0/query?f=json&geometry=' + lng + ',' + lat + '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=' + encodeURIComponent(FIELDS) + '&returnGeometry=false';
-                cache[k] = apiFetch_(url, { timeout: 20000, retries: 1 }).then(r => {
-                    if (r && r.error) throw apiErr_('PEAT', 'Layanan peta gambut KLHK menolak permintaan.', false);
-                    const f = r && r.features && r.features[0];
-                    return f ? { gambut: true, a: f.attributes || {} } : { gambut: false };
-                }).catch(e => { delete cache[k]; throw e; });
-                return cache[k];
-            }
-            const num = (v) => (typeof v === 'number' && isFinite(v)) ? (Math.round(v * 10) / 10).toString().replace('.', ',') : '';
-            function html(res) {
-                if (!res || !res.gambut) return 'Lahan gambut: <b>di luar area gambut</b> pada peta KLHK (FEG 1:50.000)';
-                const a = res.a || {}, fungsi = String(a.FEG_50K || a.FEG_PEAT || '').trim(), tebal = String(a.PEAT_THICK || '').trim(), mn = num(a.Min_Thick);
-                let h = 'Lahan gambut: <b style="color:#b45309">YA</b>';
-                if (a.NAMA_KHG) h += ' &middot; KHG ' + esc(a.NAMA_KHG);
-                h += '<br>Fungsi: <b>' + esc(fungsi || '-') + '</b>';
-                if (tebal || mn) h += ' &middot; Tebal: ' + esc(tebal || '-') + (mn ? ' (min. ' + mn + ' m)' : '');
-                return h;
-            }
-
-            /* ---------- panel legenda + cek titik (muncul saat layer gambut aktif) ---------- */
-            const panel = L.control({ position: 'bottomright' });
-            panel.onAdd = function () {
-                const div = L.DomUtil.create('div'); L.DomEvent.disableClickPropagation(div); L.DomEvent.disableScrollPropagation(div);
-                div.style.cssText = 'background:rgba(255,255,255,.96);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.25);padding:8px 10px;font:11px/1.5 system-ui,sans-serif;color:#1e293b;max-width:230px';
-                div.innerHTML = '<b>Lahan Gambut (KLHK)</b>' +
-                    '<div style="margin:5px 0 1px;height:9px;border-radius:5px;background:linear-gradient(90deg,rgb(0,244,26),rgb(235,247,40),rgb(249,30,22));border:1px solid #cbd5e1"></div>' +
-                    '<div style="display:flex;justify-content:space-between;color:#475569"><span>tipis 0 m</span><span>8 m</span><span>tebal 16,5 m</span></div>' +
-                    '<div style="color:#64748b;margin:3px 0 5px">Warna = ketebalan gambut minimum. Garis abu-abu = batas satuan gambut.</div>' +
-                    '<div id="peat-res" style="border-top:1px dashed #cbd5e1;padding-top:5px">Klik peta untuk cek gambut di titik itu.</div>';
-                return div;
-            };
-            function clearMarker() { if (marker) { map.removeLayer(marker); marker = null; } }
-            map.on('overlayadd', (e) => { if (e.layer === layer) { ok = 0; bad = 0; warned = false; panel.addTo(map); } });
-            map.on('overlayremove', (e) => { if (e.layer === layer) { map.removeControl(panel); clearMarker(); } });
-            map.on('click', async (e) => {
-                if (!map.hasLayer(layer)) return;
-                const box = document.getElementById('peat-res'); if (!box) return;
-                clearMarker(); marker = L.circleMarker(e.latlng, { radius: 6, color: '#0f172a', weight: 2, fillColor: '#fde047', fillOpacity: 1, interactive: false }).addTo(map);
-                box.innerHTML = 'Memeriksa gambut di ' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5) + '...';
-                try { const r = await lookup(e.latlng.lat, e.latlng.lng); box.innerHTML = html(r); }
-                catch (err) { box.innerHTML = 'Info gambut titik ini tidak dapat dimuat sekarang. Warna peta tetap dapat dibaca.'; }
-            });
-            return { layer, lookup, html };
-        })();
-
-        // Kontrol lapisan: tiga overlay siap pakai (jalan, sungai & kanal, lahan gambut). Data dimuat otomatis saat dicentang.
-        (function () {
-            const attr = '&copy; kontributor OpenStreetMap';
-            let attrOn = 0;
-            const lc = window.layersCtl_;
-            if (lc) {
-                lc.addOverlay(Osm.groups.jalan, 'Jalan (OpenStreetMap)');
-                lc.addOverlay(Osm.groups.air, 'Sungai &amp; kanal (OpenStreetMap)');
-                lc.addOverlay(Peat.layer, 'Lahan gambut (KLHK, FEG 1:50.000)');
-            }
-            map.on('overlayadd', async (e) => {
-                if (e.layer !== Osm.groups.jalan && e.layer !== Osm.groups.air) return;
-                if (!attrOn++) map.attributionControl.addAttribution(attr);
-                if (!Osm.ready()) {
-                    try { await Osm.load(); } catch (err) { Notify.error(friendlyError_(err), 'Gagal memuat lapisan'); }
-                    if (!Osm.ready()) return;
-                    // gambar ulang karena lapisan baru terisi
-                    [Osm.groups.jalan, Osm.groups.air].forEach(g => { if (map.hasLayer(g)) { map.removeLayer(g); map.addLayer(g); } });
-                }
-            });
-            map.on('overlayremove', (e) => { if ((e.layer === Osm.groups.jalan || e.layer === Osm.groups.air) && --attrOn <= 0) { attrOn = 0; map.attributionControl.removeAttribution(attr); } });
-            // isi blok akses + info gambut saat popup titik panas dibuka
-            map.on('popupopen', async (e) => {
-                const root = e.popup && e.popup.getElement && e.popup.getElement(); if (!root) return;
-                const box = root.querySelector('.rk-acc'); if (!box) return;
+            async function fillBox(box) {
                 const lat = parseFloat(box.dataset.lat), lng = parseFloat(box.dataset.lng);
-                const fill = () => {
-                    box.innerHTML = Osm.accessHtml(lat, lng) + '<div class="rk-peat" style="margin-top:3px">Memeriksa lahan gambut...</div>';
-                    Peat.lookup(lat, lng).then(r => { const el = box.querySelector('.rk-peat'); if (el) { el.innerHTML = Peat.html(r); e.popup.update(); } })
-                        .catch(() => { const el = box.querySelector('.rk-peat'); if (el) { el.textContent = 'Info lahan gambut belum dapat dimuat.'; e.popup.update(); } });
-                    e.popup.update();
-                };
-                fill();
-                if (!Osm.ready()) {
-                    box.innerHTML = 'Memuat jarak jalan/sungai...';
-                    try { await Osm.load(true); } catch (err) { /* abaikan */ }
-                    fill();
-                }
+                if (isNaN(lat) || isNaN(lng)) return;
+                box.innerHTML = 'Memeriksa lahan gambut, jalan & sungai...';
+                const r = await lookup(lat, lng);
+                box.innerHTML = ctxHtml(r, lat, lng);
+            }
+            /* ---------- daftar lapisan & ingatan pilihan ---------- */
+            const LAYERS = [
+                ['Lahan Gambut – Fungsi Ekosistem (BIG 1:50.000)', peatGroup, 'peat'],
+                ['Sebaran Lahan Gambut (BIG 1:250.000)', peatAlt, 'peat250'],
+                ['Kesatuan Hidrologis Gambut / KHG (BIG)', khgTiles, 'khg'],
+                ['Rawan Kebakaran Hutan & Lahan (BIG 1:250.000)', rawanTiles, 'rawan'],
+                ['Jalan – cepat (Esri)', roadTiles, 'jalanEsri'],
+                ['Jalan (OpenStreetMap, area tampilan)', groups.jalan, 'jalanOsm'],
+                ['Sungai & kanal (OpenStreetMap, area tampilan)', groups.air, 'airOsm']
+            ];
+            const OVK = 'rk_ovl_v2';
+            function saved() { try { return JSON.parse(localStorage.getItem(OVK) || '[]'); } catch (e) { return []; } }
+            function remember() { try { localStorage.setItem(OVK, JSON.stringify(LAYERS.filter(l => map.hasLayer(l[1])).map(l => l[2]))); } catch (e) { /* abaikan */ } }
+            const lc = window.layersCtl_; if (lc) LAYERS.forEach(l => lc.addOverlay(l[1], l[0]));
+            let attrOsm = 0; const OSMA = '&copy; kontributor OpenStreetMap';
+            map.on('overlayadd', (e) => {
+                if (LAYERS.some(l => l[1] === e.layer)) remember();
+                if (e.layer === peatGroup) { tOk = 0; tErr = 0; tilesDead = false; chip('peat', 'Memuat lapisan gambut (BIG)...', 'info'); loadVec(true); setTimeout(() => { if (!tOk && !tilesDead && map.hasLayer(peatGroup)) { tilesDead = true; chip('peat', 'Gambar peta BIG lambat/tidak termuat, memakai data vektor...', 'warn'); styleVec(); loadVec(true); } }, 15000); }
+                if (e.layer === groups.jalan || e.layer === groups.air) { if (!attrOsm++) map.attributionControl.addAttribution(OSMA); loadOsm(); }
             });
+            map.on('overlayremove', (e) => {
+                if (LAYERS.some(l => l[1] === e.layer)) remember();
+                if (e.layer === peatGroup) { chip('peat', '', ''); chip('pv', '', ''); }
+                if (e.layer === groups.jalan || e.layer === groups.air) { if (--attrOsm <= 0) { attrOsm = 0; map.attributionControl.removeAttribution(OSMA); } if (!osmActive()) chip('osm', '', ''); }
+            });
+            map.on('moveend', () => { if (map.hasLayer(peatGroup)) schedVec(); if (osmActive()) schedOsm(); });
+            saved().forEach(id => { const l = LAYERS.find(x => x[2] === id); if (l) map.addLayer(l[1]); });
+            /* ---------- popup titik panas: isi blok konteks ---------- */
+            map.on('popupopen', (e) => {
+                const root = e.popup && e.popup.getElement && e.popup.getElement(); if (!root) return;
+                const box = root.querySelector('.rk-acc'); if (box) fillBox(box).catch(() => { box.innerHTML = '<span style="color:#94a3b8">Konteks lokasi belum dapat dimuat.</span>'; });
+            });
+            /* ---------- tombol "Cek lokasi" ---------- */
+            let pick = false;
+            const pickCtl = L.control({ position: 'topleft' });
+            pickCtl.onAdd = function () {
+                const d = L.DomUtil.create('div', 'leaflet-bar rk-pick');
+                const a = L.DomUtil.create('a', '', d); a.href = '#'; a.title = 'Cek lokasi: gambut, jalan & sungai terdekat'; a.setAttribute('role', 'button'); a.setAttribute('aria-label', 'Cek lokasi');
+                a.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:6px"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>';
+                L.DomEvent.disableClickPropagation(d);
+                L.DomEvent.on(a, 'click', (ev) => { L.DomEvent.preventDefault(ev); pick = !pick; d.classList.toggle('on', pick); map.getContainer().style.cursor = pick ? 'crosshair' : ''; if (pick) Notify.info('Ketuk titik di peta untuk memeriksa lahan gambut, jalan, dan sungai terdekat.', 'Cek lokasi', { timeout: 5000 }); });
+                this._d = d; return d;
+            };
+            pickCtl.addTo(map);
+            map.on('click', (ev) => {
+                if (!pick || (typeof waterPickMode !== 'undefined' && waterPickMode)) return;
+                pick = false; pickCtl._d.classList.remove('on'); map.getContainer().style.cursor = '';
+                const lat = ev.latlng.lat, lng = ev.latlng.lng;
+                L.popup({ maxWidth: 280 }).setLatLng(ev.latlng).setContent('<div style="font:12px/1.5 system-ui,sans-serif"><b>Cek lokasi</b><div style="color:#64748b;font-size:10.5px">' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '</div><div class="rk-acc" data-lat="' + lat + '" data-lng="' + lng + '" style="margin-top:6px">Memeriksa...</div></div>').openOn(map);
+            });
+            return { lookup, ctxHtml, config: (c) => { if (c && c.big) { BIG = String(c.big); L_PEAT = c.layerGambut || L_PEAT; L_PEAT_ALT = c.layerGambutAlt || L_PEAT_ALT; } } };
         })();
 
-        // Ringkasan verifikasi digambar setiap kali bagian analisis dirender
+        // ringkasan verifikasi ikut digambar saat bagian analisis dirender
         (function () {
             const ris = window.renderInsightSections_;
             if (typeof ris === 'function') window.renderInsightSections_ = function () { ris.apply(this, arguments); try { renderVerif_(); } catch (e) { /* abaikan */ } };
@@ -2623,7 +2829,8 @@
                 globalLuasServer = result.luas || null;
                 globalArsip = Array.isArray(result.arsipLaporan) ? result.arsipLaporan : [];
                 globalStatus = (result && result.statusTitik) || {};
-                Osm.setMeta(result && result.lapisanOsm);
+                Admin.setInfo(result && result.admin);
+                Ktx.config(result && result.konteks);
                 globalReportsByKey = {};
                 if (result && Array.isArray(result.reports)) {
                     result.reports.forEach(rep => { globalReportsByKey[rep.hotspotKey] = rep; });
@@ -2764,7 +2971,7 @@
                                 `<div class="flex items-center justify-between pt-2.5 mt-1 border-t border-dashed border-slate-200">` +
                                     `<span class="text-[10px] text-slate-400 font-mono">${h.lat.toFixed(5)}, ${h.lng.toFixed(5)}</span>` +
                                 `</div>` +
-                                `<div class="rk-acc" data-lat="${h.lat}" data-lng="${h.lng}">Memuat jarak jalan/sungai...</div>` +
+                                `<div class="rk-acc" data-lat="${h.lat}" data-lng="${h.lng}">Memeriksa lahan gambut, jalan & sungai...</div>` +
                                 statusSectionHtml_(hKey) +
                                 reportSectionHtml +
                                 `<a href="${routeUrl}" target="_blank" ` +
@@ -5531,7 +5738,7 @@
                 </div>
                 ${dist}${reco}
                 ${w.keterangan ? `<div class="ip-msg">${esc(w.keterangan)}</div>` : ''}
-                <div class="ws-act"><a href="${esc(wsRouteUrl_(w))}" target="_blank" rel="noopener" style="background:${c}">Rute di Google Maps</a></div>
+                <div class="ws-act"><a href="${esc(wsRouteUrl_(w))}" target="_blank" rel="noopener" style="background:${c}">Rute di Google Maps</a></div>${Admin.wsButtons(w.id)}
                 <div class="ip-ft" style="padding-top:8px">${w.lat.toFixed(5)}, ${w.lng.toFixed(5)} · ${esc(w.pelapor || '-')}${tgl ? ' · ' + esc(tgl) : ''}</div>
             </div>`;
         }
@@ -5775,7 +5982,7 @@
                         <td class="py-3 px-4 text-xs text-slate-600 whitespace-nowrap">${w.lat.toFixed(5)}, ${w.lng.toFixed(5)}</td>
                         <td class="py-3 px-4"><div class="flex flex-wrap gap-1.5">
                             <button type="button" class="wt-btn" data-wt="focus" data-id="${esc(w.id)}">Lihat di peta</button>
-                            <a class="wt-btn" href="${esc(wsRouteUrl_(w))}" target="_blank" rel="noopener">Rute</a>
+                            <a class="wt-btn" href="${esc(wsRouteUrl_(w))}" target="_blank" rel="noopener">Rute</a>${Admin.isAdmin() ? `<button type="button" class="wt-btn" data-adm-ws="edit" data-id="${esc(w.id)}">Ubah</button><button type="button" class="wt-btn" style="color:#b91c1c" data-adm-ws="del" data-id="${esc(w.id)}">Hapus</button>` : ''}
                         </div></td></tr>`;
                 }).join('');
             const pag = document.getElementById('ws-tbl-pagination');
